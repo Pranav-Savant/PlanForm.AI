@@ -1,6 +1,6 @@
 import { useRef, useState } from "react";
 
-function LayoutViewer({ parsedLayout, image }) {
+function LayoutViewer({ parsedLayout, image, coordinateImagePath }) {
   const wallSegments = [...(parsedLayout?.wallSegments || [])]
     .sort((a, b) => {
       const lenA = Math.hypot(a.x2 - a.x1, a.y2 - a.y1);
@@ -29,52 +29,67 @@ function LayoutViewer({ parsedLayout, image }) {
     }
   };
 
+  const backendBase = "http://localhost:5000";
+
+  const coordinateImageUrl = coordinateImagePath
+    ? `${backendBase}/${coordinateImagePath.replace(/\\/g, "/")}`
+    : null;
+
+  const displayImage = coordinateImageUrl || image;
+
+  const isCoordinateView = !!coordinateImageUrl;
+
   return (
     <div style={styles.card}>
-      <h2 style={styles.heading}>Parsed Layout Visualization</h2>
+      <h2 style={styles.heading}>
+        {isCoordinateView ? "Coordinate Layout Visualization" : "Parsed Layout Visualization"}
+      </h2>
 
       <div style={styles.previewWrapper}>
-        {image ? (
+        {displayImage ? (
           <div style={styles.imageContainer}>
             <img
               ref={imageRef}
-              src={image}
-              alt="Uploaded Plan"
+              src={displayImage}
+              alt="Floor Plan"
               style={styles.image}
               onLoad={handleImageLoad}
             />
 
-            <svg
-              style={styles.svgOverlay}
-              width={displaySize.width}
-              height={displaySize.height}
-            >
-              {/* Rooms */}
-              {roomPolygons.map((room, index) => (
-                <polygon
-                  key={index}
-                  points={room
-                    .map((pt) => `${pt.x * scaleX},${pt.y * scaleY}`)
-                    .join(" ")}
-                  fill="rgba(34,197,94,0.15)"
-                  stroke="#22c55e"
-                  strokeWidth="2"
-                />
-              ))}
+            {/* Only show SVG overlay on ORIGINAL image, not coordinate image */}
+            {!isCoordinateView && (
+              <svg
+                style={styles.svgOverlay}
+                width={displaySize.width}
+                height={displaySize.height}
+              >
+                {/* Rooms */}
+                {roomPolygons.map((room, index) => (
+                  <polygon
+                    key={index}
+                    points={room
+                      .map((pt) => `${pt.x * scaleX},${pt.y * scaleY}`)
+                      .join(" ")}
+                    fill="rgba(34,197,94,0.15)"
+                    stroke="#22c55e"
+                    strokeWidth="2"
+                  />
+                ))}
 
-              {/* Walls */}
-              {wallSegments.map((wall, index) => (
-                <line
-                  key={index}
-                  x1={wall.x1 * scaleX}
-                  y1={wall.y1 * scaleY}
-                  x2={wall.x2 * scaleX}
-                  y2={wall.y2 * scaleY}
-                  stroke="#ef4444"
-                  strokeWidth="3"
-                />
-              ))}
-            </svg>
+                {/* Walls */}
+                {wallSegments.map((wall, index) => (
+                  <line
+                    key={index}
+                    x1={wall.x1 * scaleX}
+                    y1={wall.y1 * scaleY}
+                    x2={wall.x2 * scaleX}
+                    y2={wall.y2 * scaleY}
+                    stroke="#ef4444"
+                    strokeWidth="3"
+                  />
+                ))}
+              </svg>
+            )}
           </div>
         ) : (
           <p style={{ color: "#9ca3af" }}>No image uploaded.</p>
@@ -93,7 +108,7 @@ function LayoutViewer({ parsedLayout, image }) {
 
 const styles = {
   card: {
-    background: "rgba(15, 23, 42, 0.6)", // 🔥 dark glass
+    background: "rgba(15, 23, 42, 0.6)",
     backdropFilter: "blur(14px)",
     padding: "24px",
     borderRadius: "16px",

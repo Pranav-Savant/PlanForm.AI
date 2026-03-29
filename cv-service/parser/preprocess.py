@@ -1,5 +1,6 @@
 import cv2
 import numpy as np
+import os
 from parser.graph_utils import build_wall_graph, detect_graph_openings
 
 
@@ -32,6 +33,13 @@ def normalize_line(x1, y1, x2, y2):
         if y1 > y2:
             return x2, y2, x1, y1
     return x1, y1, x2, y2
+
+
+def _safe_int(v):
+    try:
+        return int(round(float(v)))
+    except:
+        return 0
 
 
 # ══════════════════════════════════════════════════════════════════════════════
@@ -462,7 +470,72 @@ def remove_duplicate_lines(lines, tolerance=10, gap_threshold=10):
 
     return filtered
 
+def merge_parallel_wall_lines_to_center(lines, distance_thresh=12, overlap_thresh=20):
+    """
+    Merge two nearby parallel wall-edge lines into one centerline,
+    while preserving the FULL wall span (union, not just overlap).
+    """
+    used = [False] * len(lines)
+    merged = []
 
+    for i in range(len(lines)):
+        if used[i]:
+            continue
+
+        x1, y1, x2, y2 = normalize_line(*lines[i])
+        merged_this = False
+
+        for j in range(i + 1, len(lines)):
+            if used[j]:
+                continue
+
+            a1, b1, a2, b2 = normalize_line(*lines[j])
+
+            # ---------------- HORIZONTAL PAIR ----------------
+            if abs(y1 - y2) < 8 and abs(b1 - b2) < 8:
+                if abs(y1 - b1) <= distance_thresh:
+                    overlap_start = max(min(x1, x2), min(a1, a2))
+                    overlap_end   = min(max(x1, x2), max(a1, a2))
+                    overlap = overlap_end - overlap_start
+
+                    if overlap >= overlap_thresh:
+                        cy = int((y1 + b1) / 2)
+
+                        # FULL UNION SPAN (important fix)
+                        new_x1 = min(x1, a1)
+                        new_x2 = max(x2, a2)
+
+                        merged.append((new_x1, cy, new_x2, cy))
+                        used[i] = True
+                        used[j] = True
+                        merged_this = True
+                        break
+
+            # ---------------- VERTICAL PAIR ----------------
+            elif abs(x1 - x2) < 8 and abs(a1 - a2) < 8:
+                if abs(x1 - a1) <= distance_thresh:
+                    overlap_start = max(min(y1, y2), min(b1, b2))
+                    overlap_end   = min(max(y1, y2), max(b1, b2))
+                    overlap = overlap_end - overlap_start
+
+                    if overlap >= overlap_thresh:
+                        cx = int((x1 + a1) / 2)
+
+                        # FULL UNION SPAN (important fix)
+                        new_y1 = min(y1, b1)
+                        new_y2 = max(y2, b2)
+
+                        merged.append((cx, new_y1, cx, new_y2))
+                        used[i] = True
+                        used[j] = True
+                        merged_this = True
+                        break
+
+        if not merged_this and not used[i]:
+            merged.append((x1, y1, x2, y2))
+            used[i] = True
+
+    return merged
 # ══════════════════════════════════════════════════════════════════════════════
 # INTERSECTION FIXING
 # ══════════════════════════════════════════════════════════════════════════════
@@ -938,6 +1011,73 @@ def detect_raw_openings(segments, min_gap=20, max_gap=130, align_tol=8):
 
 
 # ══════════════════════════════════════════════════════════════════════════════
+# SAFE 2D COORDINATE OVERLAY (NEW)
+# ══════════════════════════════════════════════════════════════════════════════
+
+def draw_coordinate_overlay(image, wall_segments):
+    overlay = image.copy()
+
+    # Collect all endpoints
+    points = []
+    for wall in wall_segments:
+        points.append((_safe_int(wall["x1"]), _safe_int(wall["y1"])))
+        points.append((_safe_int(wall["x2"]), _safe_int(wall["y2"])))
+
+    # Remove duplicates using clustering
+    unique_points = []
+    threshold = 10  # merge close points
+
+    for p in points:
+        is_duplicate = False
+        for up in unique_points:
+            if abs(p[0] - up[0]) < threshold and abs(p[1] - up[1]) < threshold:
+                is_duplicate = True
+                break
+        if not is_duplicate:
+            unique_points.append(p)
+
+    # Draw clean points
+    for idx, (x, y) in enumerate(unique_points, start=1):
+        cv2.circle(overlay, (x, y), 5, (0, 0, 255), -1)
+        cv2.putText(
+            overlay,
+            f"P{idx}({x},{y})",
+            (x + 5, y - 5),
+            cv2.FONT_HERSHEY_SIMPLEX,
+            0.4,
+            (0, 0, 255),
+            1,
+            cv2.LINE_AA
+        )
+
+    return overlay
+
+def save_coordinate_overlay(overlay_image, image_path):
+    """
+    Save annotated coordinate image into Node backend's public uploads folder
+    so React can load it.
+    """
+    try:
+        # Path to MERN backend uploads folder
+        backend_uploads_dir = os.path.abspath(
+            os.path.join(os.path.dirname(__file__), "../../server/uploads")
+        )
+
+        os.makedirs(backend_uploads_dir, exist_ok=True)
+
+        base_name = os.path.splitext(os.path.basename(image_path))[0]
+        filename = f"{base_name}_coordinates.png"
+        save_path = os.path.join(backend_uploads_dir, filename)
+
+        cv2.imwrite(save_path, overlay_image)
+
+        # Return browser-friendly relative path
+        return f"uploads/{filename}"
+
+    except Exception as e:
+        print("Coordinate overlay save error:", e)
+        return ""
+# ══════════════════════════════════════════════════════════════════════════════
 # MAIN PROCESSOR
 # ══════════════════════════════════════════════════════════════════════════════
 
@@ -951,7 +1091,8 @@ def process_floorplan(image_path):
             "wallSegments": [], "roomPolygons": [],
             "openingsData": [], "doorsData": [], "windowsData": [],
             "graph": {"nodes": [], "edges": []},
-            "imageWidth": 0, "imageHeight": 0
+            "imageWidth": 0, "imageHeight": 0,
+            "coordinateImagePath": ""
         }
 
     height, width = image.shape[:2]
@@ -1007,6 +1148,10 @@ def process_floorplan(image_path):
 
     # ── 5. Wall segment cleanup pipeline ─────────────────────────────────────
     filtered = remove_duplicate_lines(raw_segments, tolerance=10, gap_threshold=8)
+
+    # NEW: merge thick-wall edge pairs into one centerline
+    filtered = merge_parallel_wall_lines_to_center(filtered, distance_thresh=max(8, wall_thickness), overlap_thresh=28)
+    
     filtered = connect_wall_intersections(filtered, snap_threshold=12)
     filtered = [normalize_line(*l) for l in filtered if line_length(*l) > 14]
     filtered = remove_duplicate_lines(filtered, tolerance=8, gap_threshold=6)
@@ -1105,6 +1250,16 @@ def process_floorplan(image_path):
             polygon = [{"x": int(pt[0][0]), "y": int(pt[0][1])} for pt in approx]
             room_polygons.append(polygon)
 
+    # ── 12. SAFE 2D COORDINATE OVERLAY (NEW) ─────────────────────────────────
+    coordinate_image_path = ""
+    try:
+        coordinate_overlay = draw_coordinate_overlay(
+    image, wall_segments
+)
+        coordinate_image_path = save_coordinate_overlay(coordinate_overlay, image_path)
+    except Exception as e:
+        print("Coordinate overlay error:", e)
+
     return {
         "walls":        len(wall_segments),
         "rooms":        len(room_polygons),
@@ -1118,5 +1273,6 @@ def process_floorplan(image_path):
         "windowsData":  windows_data,
         "graph":        graph,
         "imageWidth":   width,
-        "imageHeight":  height
+        "imageHeight":  height,
+        "coordinateImagePath": coordinate_image_path
     }

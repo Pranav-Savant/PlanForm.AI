@@ -57,7 +57,7 @@ function ResultsPage() {
         <div className="space-y-8">
 
           <div className="bg-slate-800/60 border border-slate-700 rounded-2xl p-6 shadow-lg">
-            <LayoutViewer parsedLayout={parsedLayout} image={image} />
+            <LayoutViewer parsedLayout={parsedLayout} image={image} coordinateImagePath={parsedLayout.coordinateImagePath}/>
           </div>
 
           <div className="bg-slate-800/60 border border-slate-700 rounded-2xl p-6 shadow-lg">
