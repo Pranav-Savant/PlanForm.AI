@@ -1,0 +1,65 @@
+[
+  {
+    "name": "AAC Blocks",
+    "cost": 3,
+    "strength": 5,
+    "durability": 8,
+    "thermalEfficiency": 9,
+    "bestUse": ["partition_wall"],
+    "description": "Lightweight and thermally efficient wall material."
+  },
+  {
+    "name": "Red Brick",
+    "cost": 5,
+    "strength": 8,
+    "durability": 6,
+    "thermalEfficiency": 5,
+    "bestUse": ["load_bearing_wall"],
+    "description": "Traditional strong masonry material for structural walls."
+  },
+  {
+    "name": "RCC",
+    "cost": 9,
+    "strength": 10,
+    "durability": 10,
+    "thermalEfficiency": 4,
+    "bestUse": ["slab", "column", "load_bearing_wall"],
+    "description": "Reinforced cement concrete for high strength structural elements."
+  },
+  {
+    "name": "Steel Frame",
+    "cost": 9,
+    "strength": 10,
+    "durability": 9,
+    "thermalEfficiency": 3,
+    "bestUse": ["long_span", "column", "beam"],
+    "description": "Best suited for long spans and high structural support."
+  },
+  {
+    "name": "Hollow Concrete Block",
+    "cost": 4,
+    "strength": 5,
+    "durability": 6,
+    "thermalEfficiency": 7,
+    "bestUse": ["partition_wall"],
+    "description": "Affordable lightweight walling option for non-structural partitions."
+  },
+  {
+    "name": "Fly Ash Brick",
+    "cost": 4,
+    "strength": 7,
+    "durability": 8,
+    "thermalEfficiency": 6,
+    "bestUse": ["partition_wall", "load_bearing_wall"],
+    "description": "Eco-friendly wall material with good durability."
+  },
+  {
+    "name": "Precast Concrete Panel",
+    "cost": 7,
+    "strength": 8,
+    "durability": 9,
+    "thermalEfficiency": 5,
+    "bestUse": ["slab", "load_bearing_wall"],
+    "description": "Factory-made structural panel with fast installation benefits."
+  }
+]
