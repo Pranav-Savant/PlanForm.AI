@@ -2,11 +2,18 @@ import cv2
 import numpy as np
 from parser.graph_utils import build_wall_graph, detect_graph_openings
 
+
+# ══════════════════════════════════════════════════════════════════════════════
+# BASIC HELPERS
+# ══════════════════════════════════════════════════════════════════════════════
+
 def is_orthogonal(x1, y1, x2, y2, tolerance=10):
     return abs(x1 - x2) < tolerance or abs(y1 - y2) < tolerance
 
+
 def line_length(x1, y1, x2, y2):
     return np.sqrt((x2 - x1) ** 2 + (y2 - y1) ** 2)
+
 
 def snap_to_axis(x1, y1, x2, y2):
     if abs(x1 - x2) < abs(y1 - y2):
@@ -18,18 +25,18 @@ def snap_to_axis(x1, y1, x2, y2):
 
 
 def normalize_line(x1, y1, x2, y2):
-    if abs(y1 - y2) < abs(x1 - x2):   
+    if abs(y1 - y2) < abs(x1 - x2):   # horizontal
         if x1 > x2:
             return x2, y2, x1, y1
-    else:                               
+    else:                               # vertical
         if y1 > y2:
             return x2, y2, x1, y1
     return x1, y1, x2, y2
 
 
-
-
-
+# ══════════════════════════════════════════════════════════════════════════════
+# WALL THICKNESS ESTIMATION
+# ══════════════════════════════════════════════════════════════════════════════
 
 def estimate_wall_thickness(thresh):
     """
@@ -70,9 +77,9 @@ def estimate_wall_thickness(thresh):
     return int(np.median(runs)) if runs else 8
 
 
-
-
-
+# ══════════════════════════════════════════════════════════════════════════════
+# THICK / THIN LAYER SEPARATION
+# ══════════════════════════════════════════════════════════════════════════════
 
 def separate_thick_thin(thresh, wall_thickness=8):
     """
@@ -97,9 +104,9 @@ def separate_thick_thin(thresh, wall_thickness=8):
     return thick_layer, thin_layer
 
 
-
-
-
+# ══════════════════════════════════════════════════════════════════════════════
+# LINE-ON-THICK-LAYER FILTER  (replaces near_contour)
+# ══════════════════════════════════════════════════════════════════════════════
 
 def line_on_thick_layer(x1, y1, x2, y2, thick_layer, sample_ratio=0.45):
     """
@@ -260,8 +267,8 @@ def merge_door_gap_and_arc_entries(doors_data, match_margin=56):
         hi = min(a2, b2)
         return max(0.0, hi - lo)
 
-    
-    
+    # Collapse duplicate gap-doors that come from top/bottom (or left/right)
+    # edges of the same thick wall opening.
     deduped_gap_doors = []
     for cand in gap_doors:
         duplicate = False
@@ -315,8 +322,8 @@ def merge_door_gap_and_arc_entries(doors_data, match_margin=56):
         if best_idx is not None:
             arc = arc_doors[best_idx]
             used_arcs.add(best_idx)
-            
-            
+            # Keep gap geometry (for opening width/orientation) while preserving
+            # arc metadata for downstream rendering/debugging.
             merged.append({
                 **gap,
                 "type": "door",
@@ -409,9 +416,9 @@ def opening_near_outer_band(op, image_width, image_height, border_margin=110):
     return near_left or near_right or near_top or near_bottom
 
 
-
-
-
+# ══════════════════════════════════════════════════════════════════════════════
+# DUPLICATE MERGING
+# ══════════════════════════════════════════════════════════════════════════════
 
 def remove_duplicate_lines(lines, tolerance=10, gap_threshold=10):
     """
@@ -428,7 +435,7 @@ def remove_duplicate_lines(lines, tolerance=10, gap_threshold=10):
         for i, (fx1, fy1, fx2, fy2) in enumerate(filtered):
             fx1, fy1, fx2, fy2 = normalize_line(fx1, fy1, fx2, fy2)
 
-            
+            # Horizontal merge
             if abs(y1 - y2) < tolerance and abs(fy1 - fy2) < tolerance:
                 if abs(y1 - fy1) < tolerance:
                     if not (x2 < fx1 - gap_threshold or x1 > fx2 + gap_threshold):
@@ -439,7 +446,7 @@ def remove_duplicate_lines(lines, tolerance=10, gap_threshold=10):
                         merged = True
                         break
 
-            
+            # Vertical merge
             elif abs(x1 - x2) < tolerance and abs(fx1 - fx2) < tolerance:
                 if abs(x1 - fx1) < tolerance:
                     if not (y2 < fy1 - gap_threshold or y1 > fy2 + gap_threshold):
@@ -456,9 +463,9 @@ def remove_duplicate_lines(lines, tolerance=10, gap_threshold=10):
     return filtered
 
 
-
-
-
+# ══════════════════════════════════════════════════════════════════════════════
+# INTERSECTION FIXING
+# ══════════════════════════════════════════════════════════════════════════════
 
 def connect_wall_intersections(lines, snap_threshold=12):
     """
@@ -476,7 +483,7 @@ def connect_wall_intersections(lines, snap_threshold=12):
 
             a1, b1, a2, b2 = normalize_line(*updated[j])
 
-            
+            # Horizontal wall + vertical wall
             if abs(y1 - y2) < snap_threshold and abs(a1 - a2) < snap_threshold:
                 hy  = y1
                 hx1, hx2 = x1, x2
@@ -488,7 +495,7 @@ def connect_wall_intersections(lines, snap_threshold=12):
                     elif abs(vy2 - hy) < snap_threshold:
                         updated[j] = (vx, vy1, vx, hy)
 
-            
+            # Vertical wall + horizontal wall
             elif abs(x1 - x2) < snap_threshold and abs(b1 - b2) < snap_threshold:
                 vx, vy1, vy2 = x1, y1, y2
                 hy, hx1, hx2 = b1, a1, a2
@@ -502,9 +509,9 @@ def connect_wall_intersections(lines, snap_threshold=12):
     return updated
 
 
-
-
-
+# ══════════════════════════════════════════════════════════════════════════════
+# STRUCTURE FILTER (kept for backwards-compat; not used in main pipeline)
+# ══════════════════════════════════════════════════════════════════════════════
 
 def near_contour(line, contours, tolerance=35):
     """
@@ -515,9 +522,9 @@ def near_contour(line, contours, tolerance=35):
     x1, y1, x2, y2 = line
     check_points = [
         (x1, y1), (x2, y2),
-        (int((x1 + x2) / 2), int((y1 + y2) / 2)),       
-        (int(x1 * 0.75 + x2 * 0.25), int(y1 * 0.75 + y2 * 0.25)),  
-        (int(x1 * 0.25 + x2 * 0.75), int(y1 * 0.25 + y2 * 0.75)),  
+        (int((x1 + x2) / 2), int((y1 + y2) / 2)),       # midpoint
+        (int(x1 * 0.75 + x2 * 0.25), int(y1 * 0.75 + y2 * 0.25)),  # q1
+        (int(x1 * 0.25 + x2 * 0.75), int(y1 * 0.25 + y2 * 0.75)),  # q3
     ]
     for cnt in contours:
         for point in cnt:
@@ -537,9 +544,9 @@ def classify_wall_type(x1, y1, x2, y2, width, height, margin=35):
     return "inner_wall"
 
 
-
-
-
+# ══════════════════════════════════════════════════════════════════════════════
+# DOOR DETECTION  (quarter-circle arc)
+# ══════════════════════════════════════════════════════════════════════════════
 
 def detect_doors(gray, thin_layer=None, min_radius=15, max_radius=80):
     """
@@ -580,7 +587,7 @@ def detect_doors(gray, thin_layer=None, min_radius=15, max_radius=80):
             continue
 
         fill = area / float(max(1, bw * bh))
-        
+        # Thin arc components are sparse inside their bounding square.
         if not (0.025 <= fill <= 0.22):
             continue
 
@@ -624,9 +631,9 @@ def detect_doors(gray, thin_layer=None, min_radius=15, max_radius=80):
     return dedupe_symbol_candidates(doors, center_tol=20, size_tol=12)
 
 
-
-
-
+# ══════════════════════════════════════════════════════════════════════════════
+# WINDOW DETECTION  (thin parallel line pairs)
+# ══════════════════════════════════════════════════════════════════════════════
 
 def detect_windows(thin_layer,
                    align_tol=8,
@@ -642,7 +649,7 @@ def detect_windows(thin_layer,
         thin_layer, cv2.MORPH_CLOSE, np.ones((3, 3), np.uint8), iterations=1
     )
 
-    
+    # 1) Hollow-box contours (best match for typical window symbols)
     contours, hierarchy = cv2.findContours(clean, cv2.RETR_TREE, cv2.CHAIN_APPROX_SIMPLE)
     if hierarchy is not None:
         hier = hierarchy[0]
@@ -685,9 +692,9 @@ def detect_windows(thin_layer,
                 "score": float(outer_area / box_area),
             })
 
-    
-    
-    
+    # 2) Fallback: parallel thin-line pairs (for partially broken boxes)
+    # Only run when contour-based detection found nothing; this avoids
+    # promoting arbitrary interior thin lines to windows.
     thin_lines = None
     if len(windows) == 0:
         thin_lines = cv2.HoughLinesP(
@@ -776,9 +783,9 @@ def detect_windows(thin_layer,
     return dedupe_symbol_candidates(windows, center_tol=16, size_tol=14)
 
 
-
-
-
+# ══════════════════════════════════════════════════════════════════════════════
+# OPENING CLASSIFICATION
+# ══════════════════════════════════════════════════════════════════════════════
 
 def classify_openings(raw_openings, doors, windows,
                        door_radius_margin=35,
@@ -856,9 +863,9 @@ def classify_openings(raw_openings, doors, windows,
     return classified
 
 
-
-
-
+# ══════════════════════════════════════════════════════════════════════════════
+# RAW OPENING DETECTION  (wall gaps)
+# ══════════════════════════════════════════════════════════════════════════════
 
 def detect_raw_openings(segments, min_gap=20, max_gap=130, align_tol=8):
     """
@@ -877,7 +884,7 @@ def detect_raw_openings(segments, min_gap=20, max_gap=130, align_tol=8):
         elif abs(x1 - x2) < align_tol:
             verticals.append((x1, y1, x2, y2))
 
-    
+    # ── Horizontal gaps ───────────────────────────────────────────────────────
     for i in range(len(horizontals)):
         for j in range(i + 1, len(horizontals)):
             x1a, y1a, x2a, _ = horizontals[i]
@@ -891,7 +898,7 @@ def detect_raw_openings(segments, min_gap=20, max_gap=130, align_tol=8):
             elif x2b < x1a:
                 lx2, ly, rx1 = x2b, y1b, x1a
             else:
-                continue  
+                continue  # overlapping
 
             gap = rx1 - lx2
             if min_gap <= gap <= max_gap:
@@ -902,7 +909,7 @@ def detect_raw_openings(segments, min_gap=20, max_gap=130, align_tol=8):
                     "gap": int(gap)
                 })
 
-    
+    # ── Vertical gaps ─────────────────────────────────────────────────────────
     for i in range(len(verticals)):
         for j in range(i + 1, len(verticals)):
             x1a, y1a, _, y2a = verticals[i]
@@ -930,9 +937,9 @@ def detect_raw_openings(segments, min_gap=20, max_gap=130, align_tol=8):
     return openings
 
 
-
-
-
+# ══════════════════════════════════════════════════════════════════════════════
+# MAIN PROCESSOR
+# ══════════════════════════════════════════════════════════════════════════════
 
 def process_floorplan(image_path):
     image = cv2.imread(image_path)
@@ -950,28 +957,28 @@ def process_floorplan(image_path):
     height, width = image.shape[:2]
     gray = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
 
-    
+    # ── 1. Binary threshold (dark lines on white background) ─────────────────
     _, thresh = cv2.threshold(gray, 200, 255, cv2.THRESH_BINARY_INV)
     kernel = np.ones((3, 3), np.uint8)
     thresh = cv2.morphologyEx(thresh, cv2.MORPH_CLOSE, kernel, iterations=1)
 
-    
+    # ── 2. Estimate wall thickness ────────────────────────────────────────────
     wall_thickness = estimate_wall_thickness(thresh)
 
-    
+    # ── 3. Separate thick (walls) from thin (arcs / window lines) ────────────
     thick_layer, thin_layer = separate_thick_thin(thresh, wall_thickness)
 
-    
-    
-    
-    
+    # ── 4. Hough line detection on thick layer ────────────────────────────────
+    #    Lower threshold (50 vs 80) and shorter minLineLength (30 vs 40) lets
+    #    us catch outer walls and shorter interior segments that the tighter
+    #    settings silently dropped.
     lines = cv2.HoughLinesP(
         thick_layer,
         rho=1,
         theta=np.pi / 180,
-        threshold=45,        
-        minLineLength=16,    
-        maxLineGap=8         
+        threshold=45,        # ↓ was 50 — catches short stubs flanking doors
+        minLineLength=16,    # ↓ was 30 — catches short wall stubs next to door openings
+        maxLineGap=8         # bridges tiny scan-line gaps
     )
 
     raw_segments = []
@@ -986,37 +993,38 @@ def process_floorplan(image_path):
 
             x1, y1, x2, y2 = snap_to_axis(x1, y1, x2, y2)
 
-            
-            
-            
-            
-            
-            
-            
+            # ── NEW: sample the thick_layer directly instead of near_contour ──
+            # near_contour failed for long outer walls because CHAIN_APPROX_SIMPLE
+            # contours only store corner points — the middle of a straight wall
+            # had NO nearby contour vertices and was dropped.  Sampling thick_layer
+            # pixels directly is both faster and correct for all wall lengths.
+            # Use a slightly lower sample_ratio (0.38) to avoid dropping short stubs
+            # that are partly covered by the door gap itself.
             if not line_on_thick_layer(x1, y1, x2, y2, thick_layer, sample_ratio=0.38):
                 continue
 
             raw_segments.append((x1, y1, x2, y2))
 
-    
+    # ── 5. Wall segment cleanup pipeline ─────────────────────────────────────
     filtered = remove_duplicate_lines(raw_segments, tolerance=10, gap_threshold=8)
     filtered = connect_wall_intersections(filtered, snap_threshold=12)
     filtered = [normalize_line(*l) for l in filtered if line_length(*l) > 14]
     filtered = remove_duplicate_lines(filtered, tolerance=8, gap_threshold=6)
     filtered = sorted(filtered, key=lambda l: line_length(*l), reverse=True)
 
+    outer_margin = max(40, int(min(width, height) * 0.07))
     wall_segments = []
     for x1, y1, x2, y2 in filtered:
         wall_segments.append({
             "x1":      int(x1), "y1": int(y1),
             "x2":      int(x2), "y2": int(y2),
-            "wallType": classify_wall_type(x1, y1, x2, y2, width, height)
+            "wallType": classify_wall_type(x1, y1, x2, y2, width, height, margin=outer_margin)
         })
 
-    
+    # ── 6. Build wall graph ───────────────────────────────────────────────────
     graph = build_wall_graph(wall_segments)
 
-    
+    # ── 7. Detect all raw wall gaps ──────────────────────────────────────────
     scale = max(width, height) / 1024.0
     raw_openings = detect_raw_openings(
         wall_segments,
@@ -1025,7 +1033,7 @@ def process_floorplan(image_path):
         align_tol=8
     )
 
-    
+    # ── 8. Symbol detection (doors/windows) on thin layer ─────────────────────
     doors = detect_doors(
         gray,
         thin_layer=thin_layer,
@@ -1037,13 +1045,13 @@ def process_floorplan(image_path):
         min_len=max(12, int(14 * scale))
     )
 
-    
-    
+    # Door arc detector is already strict; keep its candidates to avoid dropping
+    # valid symbols when a wall-gap segment was fragmented by raster artifacts.
     windows = filter_symbols_near_openings(
         windows, raw_openings, kind="window", margin=max(16, int(28 * scale))
     )
 
-    
+    # ── 9. Classify gaps → door / window / opening ───────────────────────────
     classified = classify_openings(
         raw_openings, doors, windows,
         door_radius_margin=int(35 * scale),
@@ -1059,7 +1067,7 @@ def process_floorplan(image_path):
     windows_data = [op for op in classified if op["type"] == "window"]
     plain_openings = [op for op in classified if op["type"] == "opening"]
 
-    
+    # Append any directly-detected windows that weren't matched to a gap.
     for win in windows:
         already = any(
             abs(win["cx"] - int((op["x1"] + op["x2"]) / 2)) < 30 and
@@ -1069,7 +1077,7 @@ def process_floorplan(image_path):
         if not already:
             windows_data.append({**win, "type": "window"})
 
-    
+    # Append any directly-detected door arcs that weren't matched to a gap.
     for door in doors:
         already = any(
             abs(door["cx"] - int((op["x1"] + op["x2"]) / 2)) < 32 and
@@ -1085,7 +1093,7 @@ def process_floorplan(image_path):
     doors_data = dedupe_opening_entries(doors_data, center_tol=20)
     windows_data = dedupe_opening_entries(windows_data, center_tol=18)
 
-    
+    # ── 11. Room polygon extraction ───────────────────────────────────────────
     room_polygons = []
     all_contours, _ = cv2.findContours(
         thresh, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE
