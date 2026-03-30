@@ -15,7 +15,6 @@ const materials = JSON.parse(fs.readFileSync(materialsPath, "utf-8"));
 
 export const getMaterialRecommendations = (structuralElements) => {
   const recommendations = [];
-
   for (const element of structuralElements) {
     const { elementType, span = 0 } = element;
 

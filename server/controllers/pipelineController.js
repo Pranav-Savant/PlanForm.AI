@@ -17,7 +17,7 @@ export const analyzeFloorPlan = async (req, res) => {
     const structuralElements = classifyStructuralElements(parsedLayout);
 
     const recommendations = getMaterialRecommendations(structuralElements);
-
+    
     const aiExplanation = await generateMaterialExplanation({
       buildingSummary: {
         totalRooms: parsedLayout.rooms,
