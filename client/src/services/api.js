@@ -16,3 +16,8 @@ export const analyzeFloorPlan = async (file) => {
 
   return response.data;
 };
+
+export const chatWithAssistant = async (payload) => {
+  const response = await API.post("/chat", payload);
+  return response.data;
+};

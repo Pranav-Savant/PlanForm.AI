@@ -5,6 +5,7 @@ import MaterialPanel from "../components/MaterialPanel";
 import ExplanationPanel from "../components/ExplanationPanel";
 import TradeOff from "../components/TradeOff";
 import { BlueprintRegistry } from "../components/stellar";
+import ChatbotWidget from "../components/ChatBotWidget";
 
 function ResultsPage() {
   const location = useLocation();
@@ -105,6 +106,12 @@ function ResultsPage() {
               projectName={`Floor Plan - ${new Date().toLocaleDateString()}`}
             />
           </div>
+
+          <ChatbotWidget
+            aiExplanation={aiExplanation}
+            recommendations={recommendations}
+            parsedLayout={parsedLayout}
+          />
         </div>
       </div>
     </div>
