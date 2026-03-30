@@ -61,5 +61,842 @@
     "thermalEfficiency": 5,
     "bestUse": ["slab", "load_bearing_wall"],
     "description": "Factory-made structural panel with fast installation benefits."
+  },
+  {
+    "name": "Gypsum Board",
+    "cost": 3,
+    "strength": 3,
+    "durability": 4,
+    "thermalEfficiency": 7,
+    "bestUse": ["partition_wall"],
+    "description": "Lightweight interior partition board with good fire resistance."
+  },
+  {
+    "name": "Timber Frame",
+    "cost": 6,
+    "strength": 6,
+    "durability": 5,
+    "thermalEfficiency": 8,
+    "bestUse": ["beam", "partition_wall"],
+    "description": "Natural wood framing with excellent thermal insulation properties."
+  },
+  {
+    "name": "Structural Steel I-Beam",
+    "cost": 10,
+    "strength": 10,
+    "durability": 9,
+    "thermalEfficiency": 2,
+    "bestUse": ["beam", "long_span"],
+    "description": "Heavy-duty I-beam for maximum load transfer over long spans."
+  },
+  {
+    "name": "Laminated Veneer Lumber",
+    "cost": 7,
+    "strength": 7,
+    "durability": 7,
+    "thermalEfficiency": 8,
+    "bestUse": ["beam", "long_span"],
+    "description": "Engineered wood product offering high strength and dimensional stability."
+  },
+  {
+    "name": "Hollow Clay Block",
+    "cost": 5,
+    "strength": 6,
+    "durability": 7,
+    "thermalEfficiency": 8,
+    "bestUse": ["partition_wall", "load_bearing_wall"],
+    "description": "Fired clay block with hollow cores for improved thermal performance."
+  },
+  {
+    "name": "Ferro Cement",
+    "cost": 5,
+    "strength": 7,
+    "durability": 8,
+    "thermalEfficiency": 5,
+    "bestUse": ["slab", "partition_wall"],
+    "description": "Thin composite of cement mortar reinforced with wire mesh layers."
+  },
+  {
+    "name": "Insulated Concrete Form",
+    "cost": 8,
+    "strength": 9,
+    "durability": 9,
+    "thermalEfficiency": 10,
+    "bestUse": ["load_bearing_wall", "partition_wall"],
+    "description": "Stay-in-place foam formwork filled with concrete for superior insulation."
+  },
+  {
+    "name": "Stone Masonry",
+    "cost": 7,
+    "strength": 8,
+    "durability": 10,
+    "thermalEfficiency": 6,
+    "bestUse": ["load_bearing_wall"],
+    "description": "Natural stone construction offering timeless durability and mass."
+  },
+  {
+    "name": "Bamboo Reinforced Concrete",
+    "cost": 4,
+    "strength": 6,
+    "durability": 6,
+    "thermalEfficiency": 5,
+    "bestUse": ["slab", "beam"],
+    "description": "Eco-friendly alternative using bamboo as reinforcement in concrete."
+  },
+  {
+    "name": "Structural Insulated Panel",
+    "cost": 8,
+    "strength": 7,
+    "durability": 8,
+    "thermalEfficiency": 10,
+    "bestUse": ["partition_wall", "load_bearing_wall"],
+    "description": "Sandwich panel with foam core between OSB faces for rapid construction."
+  },
+  {
+    "name": "Cross Laminated Timber",
+    "cost": 9,
+    "strength": 8,
+    "durability": 7,
+    "thermalEfficiency": 9,
+    "bestUse": ["slab", "load_bearing_wall", "beam"],
+    "description": "Mass timber product engineered for structural applications in tall buildings."
+  },
+  {
+    "name": "Concrete Hollow Core Slab",
+    "cost": 6,
+    "strength": 8,
+    "durability": 9,
+    "thermalEfficiency": 5,
+    "bestUse": ["slab", "long_span"],
+    "description": "Precast slab with longitudinal voids reducing weight while maintaining span capacity."
+  },
+  {
+    "name": "Stabilized Mud Block",
+    "cost": 1,
+    "strength": 4,
+    "durability": 5,
+    "thermalEfficiency": 8,
+    "bestUse": ["partition_wall", "load_bearing_wall"],
+    "description": "Low-cost compressed earth block stabilized with cement or lime."
+  },
+  {
+    "name": "Glass Fiber Reinforced Concrete",
+    "cost": 8,
+    "strength": 7,
+    "durability": 8,
+    "thermalEfficiency": 5,
+    "bestUse": ["partition_wall", "slab"],
+    "description": "Thin-section concrete reinforced with alkali-resistant glass fibers."
+  },
+  {
+    "name": "Polystyrene Sandwich Panel",
+    "cost": 5,
+    "strength": 4,
+    "durability": 5,
+    "thermalEfficiency": 10,
+    "bestUse": ["partition_wall"],
+    "description": "Lightweight EPS core panel ideal for insulated non-load-bearing partitions."
+  },
+  {
+    "name": "Reinforced Brick Masonry",
+    "cost": 6,
+    "strength": 8,
+    "durability": 8,
+    "thermalEfficiency": 5,
+    "bestUse": ["load_bearing_wall", "column"],
+    "description": "Brick masonry with steel reinforcement for enhanced lateral load resistance."
+  },
+  {
+    "name": "Composite Steel Deck",
+    "cost": 8,
+    "strength": 9,
+    "durability": 9,
+    "thermalEfficiency": 3,
+    "bestUse": ["slab", "long_span"],
+    "description": "Profiled steel sheet acting compositely with concrete for floor systems."
+  },
+  {
+    "name": "Rammed Earth",
+    "cost": 2,
+    "strength": 5,
+    "durability": 7,
+    "thermalEfficiency": 9,
+    "bestUse": ["load_bearing_wall"],
+    "description": "Compacted natural soil construction offering high thermal mass."
+  },
+  {
+    "name": "Precast Concrete Column",
+    "cost": 7,
+    "strength": 9,
+    "durability": 9,
+    "thermalEfficiency": 4,
+    "bestUse": ["column"],
+    "description": "Factory-cast column element for fast-track structural erection."
+  },
+  {
+    "name": "Cellular Lightweight Concrete",
+    "cost": 3,
+    "strength": 3,
+    "durability": 5,
+    "thermalEfficiency": 9,
+    "bestUse": ["partition_wall", "slab"],
+    "description": "Foamed concrete with low density suitable for void fills and insulating screeds."
+  },
+  {
+    "name": "Polypropylene Fiber Concrete",
+    "cost": 7,
+    "strength": 8,
+    "durability": 9,
+    "thermalEfficiency": 4,
+    "bestUse": ["slab", "column"],
+    "description": "Concrete mixed with PP fibers to control plastic shrinkage cracking."
+  },
+  {
+    "name": "Lime Stone Block",
+    "cost": 5,
+    "strength": 6,
+    "durability": 8,
+    "thermalEfficiency": 7,
+    "bestUse": ["load_bearing_wall", "partition_wall"],
+    "description": "Quarried limestone cut to block form for durable masonry construction."
+  },
+  {
+    "name": "Autoclaved Foam Concrete",
+    "cost": 4,
+    "strength": 4,
+    "durability": 6,
+    "thermalEfficiency": 9,
+    "bestUse": ["partition_wall"],
+    "description": "Extremely lightweight foamed concrete cured under steam pressure."
+  },
+  {
+    "name": "Hollow Steel Section Column",
+    "cost": 9,
+    "strength": 10,
+    "durability": 8,
+    "thermalEfficiency": 2,
+    "bestUse": ["column"],
+    "description": "Circular or rectangular hollow steel sections used as efficient column members."
+  },
+  {
+    "name": "Prestressed Concrete Beam",
+    "cost": 9,
+    "strength": 10,
+    "durability": 10,
+    "thermalEfficiency": 4,
+    "bestUse": ["beam", "long_span"],
+    "description": "High-strength beam with pre-tensioned steel strands for long clear spans."
+  },
+  {
+    "name": "Wire Cut Brick",
+    "cost": 4,
+    "strength": 7,
+    "durability": 7,
+    "thermalEfficiency": 5,
+    "bestUse": ["load_bearing_wall", "partition_wall"],
+    "description": "Machine-cut fired clay brick with consistent dimensions and finish."
+  },
+  {
+    "name": "Reinforced Masonry Column",
+    "cost": 6,
+    "strength": 8,
+    "durability": 8,
+    "thermalEfficiency": 5,
+    "bestUse": ["column"],
+    "description": "Masonry column incorporating vertical steel bars grouted in cores."
+  },
+  {
+    "name": "Aluminium Composite Panel",
+    "cost": 7,
+    "strength": 4,
+    "durability": 7,
+    "thermalEfficiency": 6,
+    "bestUse": ["partition_wall"],
+    "description": "Two aluminium sheets bonded to a polyethylene core for cladding applications."
+  },
+  {
+    "name": "Carbon Fiber Reinforced Polymer",
+    "cost": 10,
+    "strength": 10,
+    "durability": 10,
+    "thermalEfficiency": 3,
+    "bestUse": ["beam", "column", "long_span"],
+    "description": "Ultra-high-strength composite for retrofitting or primary structural members."
+  },
+  {
+    "name": "Expanded Polystyrene Block",
+    "cost": 2,
+    "strength": 2,
+    "durability": 4,
+    "thermalEfficiency": 10,
+    "bestUse": ["partition_wall"],
+    "description": "Highly insulating lightweight block used in void-form and insulation applications."
+  },
+  {
+    "name": "Concrete Masonry Unit",
+    "cost": 4,
+    "strength": 6,
+    "durability": 7,
+    "thermalEfficiency": 6,
+    "bestUse": ["load_bearing_wall", "partition_wall"],
+    "description": "Standard concrete block widely used for load-bearing and partition walls."
+  },
+  {
+    "name": "Straw Bale",
+    "cost": 1,
+    "strength": 3,
+    "durability": 4,
+    "thermalEfficiency": 10,
+    "bestUse": ["partition_wall"],
+    "description": "Agricultural waste bales used in natural building for extreme insulation."
+  },
+  {
+    "name": "Plywood Sheathing",
+    "cost": 4,
+    "strength": 5,
+    "durability": 5,
+    "thermalEfficiency": 6,
+    "bestUse": ["partition_wall", "slab"],
+    "description": "Engineered wood panel used as sheathing and subflooring in light framing."
+  },
+  {
+    "name": "Fired Terracotta Block",
+    "cost": 5,
+    "strength": 6,
+    "durability": 8,
+    "thermalEfficiency": 7,
+    "bestUse": ["partition_wall"],
+    "description": "Porous fired clay block providing breathability and moderate insulation."
+  },
+  {
+    "name": "High Performance Concrete",
+    "cost": 10,
+    "strength": 10,
+    "durability": 10,
+    "thermalEfficiency": 4,
+    "bestUse": ["column", "slab", "beam"],
+    "description": "Engineered concrete mix with very low w/c ratio for extreme durability."
+  },
+  {
+    "name": "Micro Concrete",
+    "cost": 6,
+    "strength": 7,
+    "durability": 8,
+    "thermalEfficiency": 4,
+    "bestUse": ["slab", "partition_wall"],
+    "description": "Fine-aggregate concrete used in thin sections and repair applications."
+  },
+  {
+    "name": "Glass Block Wall",
+    "cost": 7,
+    "strength": 4,
+    "durability": 7,
+    "thermalEfficiency": 6,
+    "bestUse": ["partition_wall"],
+    "description": "Translucent masonry blocks allowing daylight while maintaining privacy."
+  },
+  {
+    "name": "Recycled Plastic Brick",
+    "cost": 3,
+    "strength": 4,
+    "durability": 7,
+    "thermalEfficiency": 6,
+    "bestUse": ["partition_wall"],
+    "description": "Bricks made from post-consumer recycled plastics offering eco-friendly construction."
+  },
+  {
+    "name": "Soil Cement Block",
+    "cost": 2,
+    "strength": 5,
+    "durability": 6,
+    "thermalEfficiency": 7,
+    "bestUse": ["load_bearing_wall", "partition_wall"],
+    "description": "Compressed soil with small cement content forming economical masonry blocks."
+  },
+  {
+    "name": "Composite Timber Beam",
+    "cost": 7,
+    "strength": 8,
+    "durability": 7,
+    "thermalEfficiency": 8,
+    "bestUse": ["beam", "long_span"],
+    "description": "Glued laminated timber beam with high span-to-depth ratio and natural aesthetics."
+  },
+  {
+    "name": "Geopolymer Concrete",
+    "cost": 7,
+    "strength": 9,
+    "durability": 9,
+    "thermalEfficiency": 4,
+    "bestUse": ["slab", "column", "beam"],
+    "description": "Low-carbon binder concrete using industrial by-products like fly ash and slag."
+  },
+  {
+    "name": "Self Compacting Concrete",
+    "cost": 9,
+    "strength": 9,
+    "durability": 9,
+    "thermalEfficiency": 4,
+    "bestUse": ["column", "slab"],
+    "description": "Highly flowable concrete that consolidates under its own weight without vibration."
+  },
+  {
+    "name": "Hemp Concrete",
+    "cost": 5,
+    "strength": 3,
+    "durability": 6,
+    "thermalEfficiency": 10,
+    "bestUse": ["partition_wall"],
+    "description": "Bio-composite of hemp hurd and lime binder with carbon-negative properties."
+  },
+  {
+    "name": "Ultra High Performance Concrete",
+    "cost": 10,
+    "strength": 10,
+    "durability": 10,
+    "thermalEfficiency": 3,
+    "bestUse": ["beam", "column", "long_span"],
+    "description": "UHPC with compressive strengths exceeding 150 MPa for slender structures."
+  },
+  {
+    "name": "Reinforced Gypsum Panel",
+    "cost": 4,
+    "strength": 4,
+    "durability": 5,
+    "thermalEfficiency": 7,
+    "bestUse": ["partition_wall"],
+    "description": "Fibre-reinforced gypsum panel with enhanced impact resistance for partitions."
+  },
+  {
+    "name": "Precast Staircase",
+    "cost": 7,
+    "strength": 8,
+    "durability": 9,
+    "thermalEfficiency": 4,
+    "bestUse": ["slab"],
+    "description": "Factory-manufactured concrete staircase unit for rapid on-site installation."
+  },
+  {
+    "name": "Lightweight Steel Stud",
+    "cost": 5,
+    "strength": 5,
+    "durability": 6,
+    "thermalEfficiency": 4,
+    "bestUse": ["partition_wall"],
+    "description": "Cold-formed steel channels used as framing for drywall partition systems."
+  },
+  {
+    "name": "Perlite Concrete",
+    "cost": 4,
+    "strength": 4,
+    "durability": 5,
+    "thermalEfficiency": 9,
+    "bestUse": ["slab", "partition_wall"],
+    "description": "Insulating lightweight concrete using expanded perlite as aggregate."
+  },
+  {
+    "name": "Reinforced Earth Wall",
+    "cost": 4,
+    "strength": 7,
+    "durability": 7,
+    "thermalEfficiency": 8,
+    "bestUse": ["load_bearing_wall"],
+    "description": "Compacted earth reinforced with geosynthetics or metal strips for retaining structures."
+  },
+  {
+    "name": "Composite Fiber Cement Board",
+    "cost": 5,
+    "strength": 6,
+    "durability": 8,
+    "thermalEfficiency": 6,
+    "bestUse": ["partition_wall"],
+    "description": "Cement-bonded panel with fiber reinforcement for wet area and exterior use."
+  },
+  {
+    "name": "Hollow Steel Beam",
+    "cost": 8,
+    "strength": 9,
+    "durability": 8,
+    "thermalEfficiency": 2,
+    "bestUse": ["beam", "long_span"],
+    "description": "Rectangular or square hollow section steel beams for secondary framing."
+  },
+  {
+    "name": "Pumice Block",
+    "cost": 3,
+    "strength": 4,
+    "durability": 6,
+    "thermalEfficiency": 8,
+    "bestUse": ["partition_wall"],
+    "description": "Blocks made from volcanic pumice aggregate offering natural insulation."
+  },
+  {
+    "name": "Pre-engineered Steel Building",
+    "cost": 8,
+    "strength": 9,
+    "durability": 8,
+    "thermalEfficiency": 3,
+    "bestUse": ["long_span", "beam", "column"],
+    "description": "Factory-fabricated steel structure for large clear span industrial buildings."
+  },
+  {
+    "name": "Prestressed Hollow Core Slab",
+    "cost": 8,
+    "strength": 9,
+    "durability": 9,
+    "thermalEfficiency": 5,
+    "bestUse": ["slab", "long_span"],
+    "description": "Pre-tensioned slab with hollow cores for efficient long-span floor construction."
+  },
+  {
+    "name": "Cellular PVC Panel",
+    "cost": 5,
+    "strength": 3,
+    "durability": 6,
+    "thermalEfficiency": 7,
+    "bestUse": ["partition_wall"],
+    "description": "Lightweight foamed PVC panels resistant to moisture and termites."
+  },
+  {
+    "name": "Expanded Clay Aggregate Block",
+    "cost": 5,
+    "strength": 5,
+    "durability": 7,
+    "thermalEfficiency": 8,
+    "bestUse": ["partition_wall", "load_bearing_wall"],
+    "description": "Blocks made from sintered lightweight expanded clay with good insulation."
+  },
+  {
+    "name": "Micro Pile",
+    "cost": 9,
+    "strength": 9,
+    "durability": 9,
+    "thermalEfficiency": 2,
+    "bestUse": ["column"],
+    "description": "Small-diameter cast-in-situ pile used for underpinning and tight-access foundations."
+  },
+  {
+    "name": "Adobe Block",
+    "cost": 1,
+    "strength": 4,
+    "durability": 5,
+    "thermalEfficiency": 9,
+    "bestUse": ["load_bearing_wall", "partition_wall"],
+    "description": "Sun-dried mud and straw block used in traditional low-cost earthen construction."
+  },
+  {
+    "name": "Truss Girder",
+    "cost": 9,
+    "strength": 10,
+    "durability": 9,
+    "thermalEfficiency": 2,
+    "bestUse": ["long_span", "beam"],
+    "description": "Open-web steel truss for very large roof or bridge span applications."
+  },
+  {
+    "name": "Recycled Aggregate Concrete",
+    "cost": 5,
+    "strength": 7,
+    "durability": 7,
+    "thermalEfficiency": 4,
+    "bestUse": ["slab", "load_bearing_wall"],
+    "description": "Concrete incorporating recycled demolition aggregate reducing virgin material use."
+  },
+  {
+    "name": "Brick Bat Coba Slab",
+    "cost": 3,
+    "strength": 5,
+    "durability": 6,
+    "thermalEfficiency": 7,
+    "bestUse": ["slab"],
+    "description": "Traditional Indian waterproofing slab layer using brick fragments and lime mortar."
+  },
+  {
+    "name": "GFRC Cladding Panel",
+    "cost": 8,
+    "strength": 6,
+    "durability": 8,
+    "thermalEfficiency": 5,
+    "bestUse": ["partition_wall"],
+    "description": "Glass fiber reinforced concrete panel used for architectural facade cladding."
+  },
+  {
+    "name": "Precast Concrete Wall Panel",
+    "cost": 7,
+    "strength": 8,
+    "durability": 9,
+    "thermalEfficiency": 5,
+    "bestUse": ["load_bearing_wall", "partition_wall"],
+    "description": "Off-site manufactured wall panels enabling rapid enclosure of buildings."
+  },
+  {
+    "name": "Bamboo Composite Panel",
+    "cost": 4,
+    "strength": 6,
+    "durability": 6,
+    "thermalEfficiency": 7,
+    "bestUse": ["partition_wall", "slab"],
+    "description": "Engineered bamboo strips bonded together forming a structural composite sheet."
+  },
+  {
+    "name": "Foamed Slag Brick",
+    "cost": 3,
+    "strength": 5,
+    "durability": 6,
+    "thermalEfficiency": 8,
+    "bestUse": ["partition_wall"],
+    "description": "Lightweight brick made from foamed blast furnace slag with good insulation."
+  },
+  {
+    "name": "Slag Cement Concrete",
+    "cost": 6,
+    "strength": 8,
+    "durability": 9,
+    "thermalEfficiency": 4,
+    "bestUse": ["slab", "column", "beam"],
+    "description": "Concrete using ground granulated blast furnace slag for improved long-term durability."
+  },
+  {
+    "name": "Vitrified Clay Pipe Wall",
+    "cost": 5,
+    "strength": 6,
+    "durability": 9,
+    "thermalEfficiency": 6,
+    "bestUse": ["partition_wall"],
+    "description": "Glazed ceramic blocks offering excellent chemical and moisture resistance."
+  },
+  {
+    "name": "Lightweight Steel Truss",
+    "cost": 7,
+    "strength": 8,
+    "durability": 7,
+    "thermalEfficiency": 3,
+    "bestUse": ["long_span", "beam"],
+    "description": "Cold-formed steel truss roof system for residential and light commercial buildings."
+  },
+  {
+    "name": "Sandwich Wall Panel",
+    "cost": 8,
+    "strength": 7,
+    "durability": 8,
+    "thermalEfficiency": 9,
+    "bestUse": ["load_bearing_wall", "partition_wall"],
+    "description": "Precast concrete panel with embedded insulation core for energy-efficient envelopes."
+  },
+  {
+    "name": "Oriented Strand Board",
+    "cost": 3,
+    "strength": 5,
+    "durability": 5,
+    "thermalEfficiency": 6,
+    "bestUse": ["partition_wall", "slab"],
+    "description": "Engineered wood panel from compressed wood strands used as structural sheathing."
+  },
+  {
+    "name": "Densified Silica Fume Concrete",
+    "cost": 9,
+    "strength": 10,
+    "durability": 10,
+    "thermalEfficiency": 4,
+    "bestUse": ["column", "slab"],
+    "description": "High-strength concrete incorporating silica fume for extremely low permeability."
+  },
+  {
+    "name": "Textile Reinforced Concrete",
+    "cost": 8,
+    "strength": 8,
+    "durability": 9,
+    "thermalEfficiency": 5,
+    "bestUse": ["slab", "partition_wall"],
+    "description": "Carbon or AR glass textile mesh replacing steel rebar in thin concrete elements."
+  },
+  {
+    "name": "Volcanic Tuff Block",
+    "cost": 4,
+    "strength": 5,
+    "durability": 7,
+    "thermalEfficiency": 8,
+    "bestUse": ["partition_wall", "load_bearing_wall"],
+    "description": "Quarried volcanic rock block with natural porosity and thermal mass."
+  },
+  {
+    "name": "Steel Reinforced Polymer Column",
+    "cost": 9,
+    "strength": 10,
+    "durability": 9,
+    "thermalEfficiency": 3,
+    "bestUse": ["column"],
+    "description": "Steel sections encased in fiber-reinforced polymer for corrosion-resistant columns."
+  },
+  {
+    "name": "Mud Plaster Wall",
+    "cost": 1,
+    "strength": 2,
+    "durability": 3,
+    "thermalEfficiency": 8,
+    "bestUse": ["partition_wall"],
+    "description": "Traditional hand-applied mud plaster finish providing natural insulation."
+  },
+  {
+    "name": "Post-tensioned Flat Slab",
+    "cost": 9,
+    "strength": 10,
+    "durability": 10,
+    "thermalEfficiency": 4,
+    "bestUse": ["slab", "long_span"],
+    "description": "Concrete slab with post-tensioning tendons enabling thin sections over long spans."
+  },
+  {
+    "name": "Modular Brick",
+    "cost": 4,
+    "strength": 7,
+    "durability": 7,
+    "thermalEfficiency": 5,
+    "bestUse": ["load_bearing_wall", "partition_wall"],
+    "description": "Precisely dimensioned brick designed for coursing compatibility and efficiency."
+  },
+  {
+    "name": "Fiber Reinforced Polymer Beam",
+    "cost": 9,
+    "strength": 9,
+    "durability": 10,
+    "thermalEfficiency": 4,
+    "bestUse": ["beam", "long_span"],
+    "description": "Pultruded FRP section for corrosion-free structural beams in aggressive environments."
+  },
+  {
+    "name": "Precast T Beam",
+    "cost": 7,
+    "strength": 9,
+    "durability": 9,
+    "thermalEfficiency": 4,
+    "bestUse": ["beam", "long_span"],
+    "description": "Inverted T-shaped precast beam used in bridge decks and heavy floor systems."
+  },
+  {
+    "name": "Lime Pozzolana Brick",
+    "cost": 3,
+    "strength": 6,
+    "durability": 7,
+    "thermalEfficiency": 6,
+    "bestUse": ["load_bearing_wall", "partition_wall"],
+    "description": "Low-energy brick using lime and volcanic ash pozzolana as binder."
+  },
+  {
+    "name": "Hollow Fired Brick",
+    "cost": 5,
+    "strength": 6,
+    "durability": 7,
+    "thermalEfficiency": 8,
+    "bestUse": ["partition_wall", "load_bearing_wall"],
+    "description": "Perforated fired brick reducing weight and improving thermal resistance."
+  },
+  {
+    "name": "Steel Flat Plate",
+    "cost": 8,
+    "strength": 9,
+    "durability": 8,
+    "thermalEfficiency": 2,
+    "bestUse": ["slab"],
+    "description": "Rolled steel plates used as base plates and transfer structures in buildings."
+  },
+  {
+    "name": "Bamboo Timber Hybrid",
+    "cost": 5,
+    "strength": 6,
+    "durability": 6,
+    "thermalEfficiency": 8,
+    "bestUse": ["beam", "partition_wall"],
+    "description": "Structural system combining bamboo and timber for sustainable lightweight construction."
+  },
+  {
+    "name": "Reinforced Concrete Frame",
+    "cost": 8,
+    "strength": 10,
+    "durability": 10,
+    "thermalEfficiency": 4,
+    "bestUse": ["column", "beam", "slab"],
+    "description": "Monolithic cast-in-situ frame with columns, beams and slabs acting together."
+  },
+  {
+    "name": "Slag Brick",
+    "cost": 3,
+    "strength": 6,
+    "durability": 7,
+    "thermalEfficiency": 6,
+    "bestUse": ["partition_wall", "load_bearing_wall"],
+    "description": "Brick manufactured from blast furnace slag recycling industrial waste material."
+  },
+  {
+    "name": "Concrete Encased Steel Column",
+    "cost": 9,
+    "strength": 10,
+    "durability": 10,
+    "thermalEfficiency": 3,
+    "bestUse": ["column"],
+    "description": "Steel profile fully encased in reinforced concrete for composite column action."
+  },
+  {
+    "name": "Precast Concrete Beam",
+    "cost": 7,
+    "strength": 9,
+    "durability": 9,
+    "thermalEfficiency": 4,
+    "bestUse": ["beam", "long_span"],
+    "description": "Factory-produced concrete beam installed rapidly in frame construction."
+  },
+  {
+    "name": "Natural Granite Block",
+    "cost": 8,
+    "strength": 9,
+    "durability": 10,
+    "thermalEfficiency": 5,
+    "bestUse": ["load_bearing_wall", "column"],
+    "description": "Dense igneous stone offering exceptional compressive strength and finish."
+  },
+  {
+    "name": "Brick Jelly Arch Slab",
+    "cost": 4,
+    "strength": 6,
+    "durability": 7,
+    "thermalEfficiency": 7,
+    "bestUse": ["slab"],
+    "description": "Traditional vaulted brick arch floor system providing insulated floor construction."
+  },
+  {
+    "name": "Expanded Perlite Board",
+    "cost": 4,
+    "strength": 3,
+    "durability": 5,
+    "thermalEfficiency": 10,
+    "bestUse": ["partition_wall"],
+    "description": "Ultra-low density perlite insulation board for high thermal resistance applications."
+  },
+  {
+    "name": "Fibre Cement Slab",
+    "cost": 6,
+    "strength": 7,
+    "durability": 8,
+    "thermalEfficiency": 5,
+    "bestUse": ["slab", "partition_wall"],
+    "description": "Cellulose fibre reinforced cement board for durable flat roof and floor decks."
+  },
+  {
+    "name": "Composite Hollow Slab",
+    "cost": 7,
+    "strength": 8,
+    "durability": 8,
+    "thermalEfficiency": 6,
+    "bestUse": ["slab", "long_span"],
+    "description": "Hybrid slab with voided plastic formers reducing concrete volume and self-weight."
+  },
+  {
+    "name": "Concrete Waffle Slab",
+    "cost": 8,
+    "strength": 9,
+    "durability": 9,
+    "thermalEfficiency": 5,
+    "bestUse": ["slab", "long_span"],
+    "description": "Two-way ribbed slab reducing concrete and providing large column-free spaces."
   }
 ]
