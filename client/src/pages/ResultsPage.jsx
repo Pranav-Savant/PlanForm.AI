@@ -4,6 +4,7 @@ import ModelViewer from "../components/ModelViewer";
 import MaterialPanel from "../components/MaterialPanel";
 import ExplanationPanel from "../components/ExplanationPanel";
 import TradeOff from "../components/TradeOff";
+import { BlueprintRegistry } from "../components/stellar";
 
 function ResultsPage() {
   const location = useLocation();
@@ -28,12 +29,25 @@ function ResultsPage() {
 
   const { parsedLayout, recommendations, aiExplanation } = result;
 
+  const analysisResults = {
+    totalCost:
+      recommendations?.totalCost || recommendations?.estimatedTotalCost || 0,
+    rooms: parsedLayout?.roomPolygons || [],
+    roomCount: parsedLayout?.roomPolygons?.length || 0,
+    totalArea:
+      parsedLayout?.totalArea ||
+      parsedLayout?.roomPolygons?.reduce(
+        (sum, room) => sum + (room.area || 0),
+        0,
+      ) ||
+      0,
+    materials: recommendations?.materials || recommendations,
+  };
+
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-900 via-gray-900 to-black text-white pt-24">
-      
       {/* PAGE CONTAINER */}
       <div className="max-w-7xl mx-auto px-6 py-10">
-        
         {/* HEADER */}
         <div className="flex flex-col lg:flex-row justify-between items-start lg:items-center mb-10 gap-6">
           <div>
@@ -55,9 +69,12 @@ function ResultsPage() {
 
         {/* CONTENT */}
         <div className="space-y-8">
-
           <div className="bg-slate-800/60 border border-slate-700 rounded-2xl p-6 shadow-lg">
-            <LayoutViewer parsedLayout={parsedLayout} image={image} coordinateImagePath={parsedLayout.coordinateImagePath}/>
+            <LayoutViewer
+              parsedLayout={parsedLayout}
+              image={image}
+              coordinateImagePath={parsedLayout.coordinateImagePath}
+            />
           </div>
 
           <div className="bg-slate-800/60 border border-slate-700 rounded-2xl p-6 shadow-lg">
@@ -81,7 +98,13 @@ function ResultsPage() {
           <div className="bg-slate-800/60 border border-slate-700 rounded-2xl p-6 shadow-lg">
             <ExplanationPanel aiExplanation={aiExplanation} />
           </div>
-
+          {/* Stellar Blockchain Integration */}
+          <div className="bg-slate-800/60 border border-slate-700 rounded-2xl p-6 shadow-lg">
+            <BlueprintRegistry
+              analysisResults={analysisResults}
+              projectName={`Floor Plan - ${new Date().toLocaleDateString()}`}
+            />
+          </div>
         </div>
       </div>
     </div>
