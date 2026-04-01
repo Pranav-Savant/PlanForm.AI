@@ -1,6 +1,7 @@
 import { useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
 import { useEffect, useState } from "react";
+import Home from "../assets/Home.png"
 
 function HomePage() {
   const navigate = useNavigate();
@@ -97,7 +98,7 @@ function HomePage() {
           <div className="absolute w-[350px] h-[350px] bg-indigo-500/20 blur-3xl rounded-full"></div>
 
           <img
-            src="https://pngimg.com/uploads/house/house_PNG63.png"
+            src={Home}
             alt="3D Floorplan"
             className="relative w-[480px] drop-shadow-[0_0_60px_rgba(99,102,241,0.6)]
             hover:scale-105 transition duration-500"
