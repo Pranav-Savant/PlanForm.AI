@@ -305,19 +305,27 @@ function WallLabel({ wallId, wallType, spanM, x, y, z }) {
 
   const isOuter = wallType === "outer_wall";
   const idColor = isOuter ? "#34d399" : "#94a3b8";
+  const cardBg = isOuter ? "#030f1d" : "#060c16";
+  const accentColor = isOuter ? "#34d399" : "#94a3b8";
 
   return (
     <Billboard position={[x, y, z]} follow>
+      {/* Card shadow/glow */}
+      <mesh position={[0, 0, -0.02]}>
+        <planeGeometry args={[1.35, 0.65]} />
+        <meshBasicMaterial color={accentColor} transparent opacity={0.08} />
+      </mesh>
+
       {/* Dark card background */}
       <mesh position={[0, 0, -0.01]}>
         <planeGeometry args={[1.2, 0.55]} />
-        <meshBasicMaterial color="#0f172a" transparent opacity={0.85} />
+        <meshBasicMaterial color={cardBg} transparent opacity={0.92} />
       </mesh>
 
       {/* Colored top-edge accent bar */}
       <mesh position={[0, 0.235, 0]}>
-        <planeGeometry args={[1.2, 0.045]} />
-        <meshBasicMaterial color={idColor} transparent opacity={0.95} />
+        <planeGeometry args={[1.2, 0.05]} />
+        <meshBasicMaterial color={accentColor} transparent opacity={0.98} />
       </mesh>
 
       {/* Wall ID  —  e.g. "W-03" */}
@@ -329,7 +337,7 @@ function WallLabel({ wallId, wallType, spanM, x, y, z }) {
         anchorY="middle"
         fontWeight="bold"
         letterSpacing={0.05}
-        outlineWidth={0.014}
+        outlineWidth={0.016}
         outlineColor="#000000"
       >
         {wallId}
@@ -394,12 +402,7 @@ function Wall({ segment, centerX, centerY, wallIndex }) {
   return (
     <group>
       {/* Geometry */}
-      <mesh
-        position={[midX, wallHeight / 2, midZ]}
-        rotation={[0, -angle, 0]}
-        castShadow
-        receiveShadow
-      >
+      <mesh position={[midX, wallHeight / 2, midZ]} rotation={[0, -angle, 0]}>
         <boxGeometry args={[length, wallHeight, wallThick]} />
         <meshStandardMaterial color={wallColor} />
       </mesh>
@@ -637,7 +640,6 @@ function RoomFloor({ polygon, centerX, centerY }) {
     <mesh
       rotation={[-Math.PI / 2, 0, 0]}
       position={[(minX + maxX) / 2, 0.01, (minZ + maxZ) / 2]}
-      receiveShadow
     >
       <planeGeometry args={[maxX - minX, maxZ - minZ]} />
       <meshStandardMaterial color="#d1fae5" transparent opacity={0.6} />
@@ -651,14 +653,45 @@ function RoomFloor({ polygon, centerX, centerY }) {
 
 function FloorBase() {
   return (
-    <mesh
-      rotation={[-Math.PI / 2, 0, 0]}
-      position={[0, -0.02, 0]}
-      receiveShadow
-    >
-      <planeGeometry args={[50, 50]} />
-      <meshStandardMaterial color="#e5e7eb" />
-    </mesh>
+    <group>
+      {/* Base floor slab — polished dark concrete */}
+      <mesh rotation={[-Math.PI / 2, 0, 0]} position={[0, -0.04, 0]}>
+        <planeGeometry args={[60, 60]} />
+        <meshStandardMaterial
+          color="#060d1a"
+          roughness={0.55}
+          metalness={0.18}
+        />
+      </mesh>
+
+      {/* Subtle floor reflection plane */}
+      <mesh rotation={[-Math.PI / 2, 0, 0]} position={[0, -0.03, 0]}>
+        <planeGeometry args={[60, 60]} />
+        <meshStandardMaterial
+          color="#0d1f3a"
+          transparent
+          opacity={0.35}
+          roughness={0.3}
+          metalness={0.6}
+        />
+      </mesh>
+
+      {/* Fine grid — subtle teal accent lines */}
+      <gridHelper
+        args={[60, 120, "#0e3a5c", "#0e3a5c"]}
+        position={[0, -0.01, 0]}
+        material-opacity={0.18}
+        material-transparent
+      />
+
+      {/* Coarse grid — bright glowing cyan lines */}
+      <gridHelper
+        args={[60, 24, "#0ea5e9", "#0ea5e9"]}
+        position={[0, -0.005, 0]}
+        material-opacity={0.45}
+        material-transparent
+      />
+    </group>
   );
 }
 
@@ -667,9 +700,9 @@ function FloorBase() {
 // ─────────────────────────────────────────────────────────────────────────────
 
 const LEGEND_ITEMS = [
-  { label: "Wall", color: "#94a3b8" },
-  { label: "Door", color: "#f59e0b" },
-  { label: "Window", color: "#38bdf8" },
+  { label: "Wall", color: "#6b7280" },
+  { label: "Door", color: "#92400e" },
+  { label: "Window", color: "#93c5fd" },
 ];
 
 // ─────────────────────────────────────────────────────────────────────────────
@@ -749,16 +782,18 @@ function ModelViewer({
 
       {/* ── 3D Canvas ── */}
       <div style={styles.canvasWrapper}>
-        <Canvas shadows camera={{ position: [0, 18, 16], fov: 50 }}>
-          <ambientLight intensity={0.85} />
+        <Canvas camera={{ position: [0, 18, 16], fov: 50 }}>
+          <ambientLight intensity={0.7} />
           <directionalLight
             position={[10, 14, 8]}
-            intensity={0.9}
-            castShadow
-            shadow-mapSize-width={1024}
-            shadow-mapSize-height={1024}
+            intensity={0.95}
+            color="#ffffff"
           />
-          <directionalLight position={[-8, 6, -6]} intensity={0.35} />
+          <directionalLight
+            position={[-8, 7, -6]}
+            intensity={0.35}
+            color="#ffffff"
+          />
 
           <FloorBase />
 
@@ -891,7 +926,7 @@ const styles = {
     margin: 0,
     fontSize: "20px",
     fontWeight: 700,
-    background: "linear-gradient(90deg, #34d399, #38bdf8)",
+    background: "linear-gradient(90deg, #34d399 0%, #22d3ee 50%, #818cf8 100%)",
     WebkitBackgroundClip: "text",
     WebkitTextFillColor: "transparent",
     letterSpacing: "-0.01em",
@@ -949,11 +984,13 @@ const styles = {
   canvasWrapper: {
     width: "100%",
     height: "520px",
-    borderRadius: "16px",
+    borderRadius: "20px",
     overflow: "hidden",
-    border: "1px solid rgba(255,255,255,0.08)",
-    background: "linear-gradient(135deg, #0f172a 0%, #1e293b 100%)",
-    boxShadow: "inset 0 2px 20px rgba(0,0,0,0.5)",
+    border: "1px solid rgba(14, 165, 233, 0.2)",
+    background:
+      "linear-gradient(160deg, #020c18 0%, #051020 40%, #070f1d 100%)",
+    boxShadow:
+      "inset 0 2px 30px rgba(0,0,0,0.7), 0 0 40px rgba(14,165,233,0.06)",
   },
   warning: {
     display: "flex",
@@ -973,9 +1010,9 @@ const styles = {
   indexTable: {
     marginTop: "16px",
     padding: "14px 16px",
-    background: "rgba(255,255,255,0.02)",
-    border: "1px solid rgba(255,255,255,0.06)",
-    borderRadius: "14px",
+    background: "rgba(14,165,233,0.04)",
+    border: "1px solid rgba(14,165,233,0.12)",
+    borderRadius: "16px",
   },
   indexTitle: {
     margin: "0 0 12px",
@@ -1021,12 +1058,14 @@ const styles = {
     display: "flex",
     gap: "12px",
     marginTop: "16px",
-    padding: "14px 20px",
-    background: "rgba(255,255,255,0.03)",
-    border: "1px solid rgba(255,255,255,0.07)",
-    borderRadius: "14px",
+    padding: "16px 20px",
+    background:
+      "linear-gradient(135deg, rgba(14,165,233,0.06) 0%, rgba(52,211,153,0.04) 100%)",
+    border: "1px solid rgba(14,165,233,0.15)",
+    borderRadius: "16px",
     flexWrap: "wrap",
     justifyContent: "space-around",
+    boxShadow: "0 1px 20px rgba(14,165,233,0.05)",
   },
   statItem: {
     display: "flex",

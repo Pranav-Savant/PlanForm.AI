@@ -331,9 +331,21 @@ function TradeOff({ recommendations }) {
 
   const graphData = selectedRecommendation?.rankedOptions || [];
 
-  const highlightedMaterial =
-    graphData.find((item) => item.name === highlightedMaterialName) ||
-    graphData[0];
+  const highlightedMaterial = graphData.find(
+    (item) => item.name === highlightedMaterialName,
+  );
+
+  const detailName = highlightedMaterial?.name ?? "Hover a material";
+  const detailScore = highlightedMaterial?.score ?? "--";
+  const detailCost = highlightedMaterial
+    ? highlightedMaterial.costLabel || highlightedMaterial.cost
+    : "--";
+  const detailStrength = highlightedMaterial
+    ? `${highlightedMaterial.strength}/10`
+    : "--";
+  const detailDurability = highlightedMaterial
+    ? `${highlightedMaterial.durability}/10`
+    : "--";
 
   const costValues = graphData
     .map((item) => Number(item.cost))
@@ -401,9 +413,7 @@ function TradeOff({ recommendations }) {
               key={item.element}
               onClick={() => {
                 setSelectedElement(item.element);
-                setHighlightedMaterialName(
-                  item.rankedOptions?.[0]?.name || null,
-                );
+                setHighlightedMaterialName(null);
               }}
               style={{
                 border: `1px solid ${isActive ? "#06b6d4" : "#334155"}`,
@@ -624,34 +634,33 @@ function TradeOff({ recommendations }) {
           </svg>
         </div>
 
-        {highlightedMaterial && (
-          <div
-            style={{
-              marginTop: "10px",
-              border: "1px solid #1e293b",
-              borderRadius: "10px",
-              background: "#0b1220",
-              padding: "10px 12px",
-              display: "grid",
-              gridTemplateColumns: "repeat(auto-fit, minmax(150px, 1fr))",
-              gap: "10px",
-              color: "#cbd5e1",
-              fontSize: "12px",
-            }}
-          >
-            <div>
-              <strong style={{ color: "#f8fafc" }}>
-                {highlightedMaterial.name}
-              </strong>
-            </div>
-            <div>Score: {highlightedMaterial.score}</div>
-            <div>
-              Cost: {highlightedMaterial.costLabel || highlightedMaterial.cost}
-            </div>
-            <div>Strength: {highlightedMaterial.strength}/10</div>
-            <div>Durability: {highlightedMaterial.durability}/10</div>
+        <div
+          style={{
+            marginTop: "10px",
+            border: "1px solid #1e293b",
+            borderRadius: "10px",
+            background: "#0b1220",
+            padding: "10px 12px",
+            display: "grid",
+            gridTemplateColumns: "repeat(auto-fit, minmax(150px, 1fr))",
+            gap: "10px",
+            color: "#cbd5e1",
+            fontSize: "12px",
+            minHeight: "72px",
+          }}
+        >
+          <div>
+            <strong
+              style={{ color: highlightedMaterial ? "#f8fafc" : "#94a3b8" }}
+            >
+              {detailName}
+            </strong>
           </div>
-        )}
+          <div>Score: {detailScore}</div>
+          <div>Cost: {detailCost}</div>
+          <div>Strength: {detailStrength}</div>
+          <div>Durability: {detailDurability}</div>
+        </div>
       </div>
 
       {/* Grid */}
@@ -668,7 +677,7 @@ function TradeOff({ recommendations }) {
             item={item}
             highlightedMaterialName={
               item.element === selectedRecommendation?.element
-                ? highlightedMaterial?.name
+                ? highlightedMaterialName
                 : null
             }
             setHighlightedMaterialName={setHighlightedMaterialName}
