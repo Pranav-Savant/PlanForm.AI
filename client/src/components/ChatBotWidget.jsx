@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { chatWithAssistant } from "../services/api";
 
 function ChatbotWidget({ aiExplanation, recommendations, parsedLayout }) {
@@ -6,6 +6,34 @@ function ChatbotWidget({ aiExplanation, recommendations, parsedLayout }) {
   const [messages, setMessages] = useState([]);
   const [input, setInput] = useState("");
   const [isLoading, setIsLoading] = useState(false);
+
+  const recommendationSummary = useMemo(() => {
+    if (!Array.isArray(recommendations)) return [];
+
+    return recommendations.map((entry) => ({
+      element: entry.element,
+      span: entry.span,
+      topChoice: entry.topChoice,
+      tradeoffInsight: entry.tradeoffInsight,
+      topOptions: (entry.rankedOptions || []).slice(0, 3).map((material) => ({
+        name: material.name,
+        score: material.score,
+        cost: material.costLabel || material.cost,
+        strength: material.strength,
+        durability: material.durability,
+        thermalEfficiency: material.thermalEfficiency,
+      })),
+    }));
+  }, [recommendations]);
+
+  const structuralElementsSummary = useMemo(
+    () =>
+      recommendationSummary.map((entry) => ({
+        elementType: entry.element,
+        span: entry.span,
+      })),
+    [recommendationSummary],
+  );
 
   useEffect(() => {
     const firstMessage =
@@ -29,11 +57,9 @@ function ChatbotWidget({ aiExplanation, recommendations, parsedLayout }) {
 
     const parsedLayoutSummary = parsedLayout
       ? {
-          rooms: parsedLayout.rooms,
           walls: parsedLayout.walls,
           totalArea: parsedLayout.totalArea,
           wallSegmentCount: parsedLayout.wallSegments?.length,
-          roomPolygonCount: parsedLayout.roomPolygons?.length,
           doorCount: parsedLayout.doorsData?.length,
           windowCount: parsedLayout.windowsData?.length,
           openingCount: parsedLayout.openingsData?.length,
@@ -50,7 +76,9 @@ function ChatbotWidget({ aiExplanation, recommendations, parsedLayout }) {
         message: userText,
         aiExplanation,
         recommendations,
+        recommendationSummary,
         parsedLayout: parsedLayoutSummary,
+        structuralElements: structuralElementsSummary,
         chatHistory: compactHistory,
       });
 

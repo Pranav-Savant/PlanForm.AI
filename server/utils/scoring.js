@@ -1,16 +1,53 @@
-export const normalizeCost = (cost) => {
-  return 11 - cost;
+const clamp = (value, min = 0, max = 1) => Math.min(max, Math.max(min, value));
+
+export const getMetricBounds = (materials, key) => {
+  const values = materials
+    .map((material) => Number(material[key]))
+    .filter((value) => Number.isFinite(value));
+
+  if (!values.length) {
+    return { min: 0, max: 1 };
+  }
+
+  return {
+    min: Math.min(...values),
+    max: Math.max(...values),
+  };
 };
 
-export const calculateMaterialScore = (material, weights) => {
-  const affordability = normalizeCost(material.cost);
+export const normalizeMetric = (
+  value,
+  min,
+  max,
+  { higherIsBetter = true } = {},
+) => {
+  const numericValue = Number(value);
 
-  return (
-    affordability * weights.cost +
-    material.strength * weights.strength +
-    material.durability * weights.durability +
-    material.thermalEfficiency * weights.thermalEfficiency
-  );
+  if (!Number.isFinite(numericValue)) {
+    return 0;
+  }
+
+  if (max <= min) {
+    return 0.5;
+  }
+
+  const normalized = clamp((numericValue - min) / (max - min));
+  return higherIsBetter ? normalized : 1 - normalized;
+};
+
+export const ratingFromNormalized = (normalizedValue) => {
+  const clampedValue = clamp(normalizedValue);
+  return +(1 + clampedValue * 9).toFixed(1);
+};
+
+export const calculateMaterialScore = (metrics, weights) => {
+  const weightedSum =
+    metrics.affordability * weights.cost +
+    metrics.strength * weights.strength +
+    metrics.durability * weights.durability +
+    metrics.thermalPerformance * weights.thermalEfficiency;
+
+  return weightedSum * 100;
 };
 
 export const getWeightsByElementType = (elementType) => {
@@ -49,10 +86,18 @@ export const getWeightsByElementType = (elementType) => {
 
     case "long_span":
       return {
-        cost: 0.1,
+        cost: 0.15,
         strength: 0.5,
-        durability: 0.3,
+        durability: 0.25,
         thermalEfficiency: 0.1,
+      };
+
+    case "beam":
+      return {
+        cost: 0.15,
+        strength: 0.55,
+        durability: 0.25,
+        thermalEfficiency: 0.05,
       };
 
     default:

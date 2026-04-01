@@ -12,7 +12,7 @@ export const parseFloorPlanWithCV = async (filePath) => {
       formData,
       {
         headers: formData.getHeaders(),
-      }
+      },
     );
 
     return response.data;
@@ -21,7 +21,6 @@ export const parseFloorPlanWithCV = async (filePath) => {
 
     return {
       walls: 28,
-      rooms: 7,
       openings: 6,
       wallSegments: [],
       roomPolygons: [],

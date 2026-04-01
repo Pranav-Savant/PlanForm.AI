@@ -39,7 +39,6 @@ function HomePage() {
 
   return (
     <div className="min-h-screen text-white relative overflow-hidden">
-
       {/* PARTICLES */}
       <div className="absolute inset-0 overflow-hidden z-0">
         {[...Array(20)].map((_, i) => (
@@ -65,7 +64,6 @@ function HomePage() {
 
       {/* HERO */}
       <div className="relative z-10 max-w-7xl mx-auto px-6 py-28 grid md:grid-cols-2 gap-16 items-center">
-
         <div>
           <h1 className="text-6xl font-bold leading-tight">
             <span className="bg-gradient-to-r from-indigo-400 via-blue-400 to-cyan-400 bg-clip-text text-transparent">
@@ -76,7 +74,8 @@ function HomePage() {
           </h1>
 
           <p className="mt-6 text-lg text-zinc-400 max-w-xl">
-            Transform floor plans into intelligent structural insights using AI-driven systems.
+            Transform floor plans into intelligent structural insights using
+            AI-driven systems.
           </p>
 
           <motion.button
@@ -108,9 +107,7 @@ function HomePage() {
 
       {/* HOW IT WORKS */}
       <div className="relative z-10 py-32 border-t border-white/10">
-
         <div className="max-w-7xl mx-auto px-6">
-
           <div className="text-center mb-24">
             <h2 className="text-5xl font-semibold">How It Works</h2>
             <p className="text-zinc-400 mt-4">
@@ -119,10 +116,11 @@ function HomePage() {
           </div>
 
           <div className="relative">
-
-            <div className="absolute left-1/2 top-0 h-full w-[3px]
+            <div
+              className="absolute left-1/2 top-0 h-full w-[3px]
               bg-gradient-to-b from-indigo-500 via-blue-500 to-transparent
-              -translate-x-1/2 blur-[1px]" />
+              -translate-x-1/2 blur-[1px]"
+            />
 
             {steps.map((step, i) => {
               const isLeft = i % 2 === 0;
@@ -137,16 +135,14 @@ function HomePage() {
                     isLeft ? "justify-start" : "justify-end"
                   }`}
                 >
-
                   {/* 🔥 GRADIENT BORDER CARD */}
                   <div className="group relative w-full md:w-[45%]">
-
-                    <div className="p-[1px] rounded-2xl
+                    <div
+                      className="p-[1px] rounded-2xl
                       bg-gradient-to-r from-indigo-500/40 via-blue-500/30 to-cyan-500/40
-                      hover:from-indigo-500 hover:to-cyan-500 transition-all duration-500">
-
+                      hover:from-indigo-500 hover:to-cyan-500 transition-all duration-500"
+                    >
                       <div className="bg-[#0b0f19]/90 backdrop-blur-xl rounded-2xl p-7">
-
                         <div className="text-xs text-indigo-300 mb-2 tracking-widest">
                           STEP 0{i + 1}
                         </div>
@@ -158,15 +154,12 @@ function HomePage() {
                         <p className="text-zinc-400 text-sm leading-relaxed">
                           {step.desc}
                         </p>
-
                       </div>
                     </div>
-
                   </div>
 
                   {/* NODE */}
                   <div className="absolute left-1/2 -translate-x-1/2 flex flex-col items-center">
-
                     <motion.div
                       animate={{ scale: [1, 1.2, 1] }}
                       transition={{ repeat: Infinity, duration: 2 }}
@@ -175,17 +168,13 @@ function HomePage() {
                     >
                       {i + 1}
                     </motion.div>
-
                   </div>
-
                 </motion.div>
               );
             })}
           </div>
-
         </div>
       </div>
-
     </div>
   );
 }

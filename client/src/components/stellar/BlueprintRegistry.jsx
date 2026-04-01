@@ -72,8 +72,8 @@ const BlueprintRegistry = ({
       // Extract data from analysis results
       const costEstimate =
         analysisResults.totalCost || analysisResults.estimatedCost || 0;
-      const roomsCount =
-        analysisResults.rooms?.length || analysisResults.roomCount || 0;
+      // Room count tracking is disabled; keep a stable placeholder for contract arg.
+      const roomsCount = 1;
       const totalAreaSqft =
         analysisResults.totalArea || analysisResults.area || 0;
 
@@ -163,7 +163,7 @@ const BlueprintRegistry = ({
       {analysisResults && walletState.connected && (
         <div className="bg-gray-800/50 rounded-xl p-4 border border-gray-700">
           <h4 className="text-white font-medium mb-3">Analysis to Register</h4>
-          <div className="grid grid-cols-3 gap-4 text-center">
+          <div className="grid grid-cols-2 gap-4 text-center">
             <div>
               <p className="text-2xl font-bold text-green-400">
                 {formatCurrency(
@@ -173,14 +173,6 @@ const BlueprintRegistry = ({
                 )}
               </p>
               <p className="text-gray-500 text-xs">Est. Cost</p>
-            </div>
-            <div>
-              <p className="text-2xl font-bold text-blue-400">
-                {analysisResults.rooms?.length ||
-                  analysisResults.roomCount ||
-                  0}
-              </p>
-              <p className="text-gray-500 text-xs">Rooms</p>
             </div>
             <div>
               <p className="text-2xl font-bold text-purple-400">

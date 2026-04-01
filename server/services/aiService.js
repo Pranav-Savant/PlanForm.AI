@@ -204,16 +204,33 @@ RULES:
 - Mention cost, strength, and durability tradeoffs.
 - Explain why the top-ranked material is preferred over alternatives.
 - Keep explanations concise but useful.
-- Format the response in clean readable paragraphs.
+- Output MUST be valid Markdown only (.md friendly).
+- Use short sections with Markdown headings (## and ###).
+- Use bullet points and compact comparison tables where useful.
+- Do not output JSON.
+- Do not wrap the full response in triple backticks.
+- If data is missing, add a Markdown quote block starting with > Missing data.
 
 Project data:
 ${typeof slim === "string" ? slim : JSON.stringify(slim, null, 2)}
 
-Generate:
-1. Overall project summary
-2. Element-wise explanation for each structural element
-3. Key tradeoff insights
-4. Final recommendation summary
+Return exactly this Markdown structure:
+
+## Overall Project Summary
+- 3-5 concise bullets.
+
+## Element-wise Recommendations
+For each structural element:
+### <element name>
+- Top choice and why.
+- One important tradeoff.
+- A quick alternative option.
+
+## Key Tradeoff Insights
+- 3-5 bullets focused on cost vs strength vs durability.
+
+## Final Recommendation
+- A compact concluding paragraph.
 `;
 
   try {

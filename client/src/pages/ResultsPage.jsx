@@ -1,3 +1,4 @@
+import { useEffect } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import LayoutViewer from "../components/LayoutViewer";
 import ModelViewer from "../components/ModelViewer";
@@ -10,6 +11,20 @@ import ChatbotWidget from "../components/ChatBotWidget";
 function ResultsPage() {
   const location = useLocation();
   const navigate = useNavigate();
+
+  useEffect(() => {
+    const previousScrollRestoration = window.history.scrollRestoration;
+    window.history.scrollRestoration = "manual";
+
+    window.scrollTo({ top: 0, left: 0, behavior: "auto" });
+    requestAnimationFrame(() => {
+      window.scrollTo({ top: 0, left: 0, behavior: "auto" });
+    });
+
+    return () => {
+      window.history.scrollRestoration = previousScrollRestoration;
+    };
+  }, []);
 
   const result = location.state?.result;
   const image = location.state?.image;
@@ -33,8 +48,6 @@ function ResultsPage() {
   const analysisResults = {
     totalCost:
       recommendations?.totalCost || recommendations?.estimatedTotalCost || 0,
-    rooms: parsedLayout?.roomPolygons || [],
-    roomCount: parsedLayout?.roomPolygons?.length || 0,
     totalArea:
       parsedLayout?.totalArea ||
       parsedLayout?.roomPolygons?.reduce(

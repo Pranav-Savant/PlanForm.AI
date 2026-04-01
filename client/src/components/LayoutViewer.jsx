@@ -42,7 +42,9 @@ function LayoutViewer({ parsedLayout, image, coordinateImagePath }) {
   return (
     <div style={styles.card}>
       <h2 style={styles.heading}>
-        {isCoordinateView ? "Coordinate Layout Visualization" : "Parsed Layout Visualization"}
+        {isCoordinateView
+          ? "Coordinate Layout Visualization"
+          : "Parsed Layout Visualization"}
       </h2>
 
       <div style={styles.previewWrapper}>
@@ -98,9 +100,12 @@ function LayoutViewer({ parsedLayout, image, coordinateImagePath }) {
 
       {/* Stats */}
       <div style={styles.stats}>
-        <p><strong>Walls:</strong> {parsedLayout?.walls}</p>
-        <p><strong>Rooms:</strong> {parsedLayout?.rooms}</p>
-        <p><strong>Openings:</strong> {parsedLayout?.openings}</p>
+        <p>
+          <strong>Walls:</strong> {parsedLayout?.walls}
+        </p>
+        <p>
+          <strong>Openings:</strong> {parsedLayout?.openings}
+        </p>
       </div>
     </div>
   );

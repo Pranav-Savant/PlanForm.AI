@@ -28,7 +28,6 @@ function MaterialPanel({ recommendations }) {
               <th className="px-4 py-3">S.No.</th>
               <th className="px-4 py-3">Type</th>
               <th className="px-4 py-3">Length</th>
-              <th className="px-4 py-3">Room</th>
               <th className="px-4 py-3">Cost</th>
               <th className="px-4 py-3">Strength</th>
               <th className="px-4 py-3">Durability</th>
@@ -55,10 +54,8 @@ function MaterialPanel({ recommendations }) {
 
                   <td className="px-4 py-3">{item.span} m</td>
 
-                  <td className="px-4 py-3">{item.room || "-"}</td>
-
                   <td className="px-4 py-3 text-yellow-400 font-medium">
-                    {mat?.cost}
+                    {mat?.costLabel || mat?.cost}
                   </td>
 
                   <td className="px-4 py-3 text-green-400 font-medium">

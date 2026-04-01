@@ -12,7 +12,6 @@ function Navbar() {
       shadow-[0_10px_40px_rgba(0,0,0,0.6)]"
     >
       <div className="max-w-7xl mx-auto px-6 py-4 grid grid-cols-3 items-center">
-
         {/* LEFT - LOGO */}
         <motion.div
           whileHover={{ scale: 1.05 }}
@@ -73,7 +72,6 @@ function Navbar() {
             Try Now →
           </motion.button>
         </div>
-
       </div>
 
       {/* SEPARATOR */}

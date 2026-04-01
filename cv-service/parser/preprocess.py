@@ -1086,7 +1086,7 @@ def process_floorplan(image_path):
 
     if image is None:
         return {
-            "walls": 0, "rooms": 0,
+            "walls": 0,
             "openings": 0, "doors": 0, "windows": 0,
             "wallSegments": [], "roomPolygons": [],
             "openingsData": [], "doorsData": [], "windowsData": [],
@@ -1262,7 +1262,6 @@ def process_floorplan(image_path):
 
     return {
         "walls":        len(wall_segments),
-        "rooms":        len(room_polygons),
         "openings":     len(plain_openings),
         "doors":        len(doors_data),
         "windows":      len(windows_data),

@@ -3,23 +3,65 @@
 @tailwind utilities;
 
 * {
-  font-family: 'Inter', sans-serif;
+  font-family: "Inter", sans-serif;
 }
 
-h1, h2, h3 {
-  font-family: 'Space Grotesk', sans-serif;
+h1,
+h2,
+h3 {
+  font-family: "Space Grotesk", sans-serif;
 }
 
 /* GRID BACKGROUND */
 body {
   background-color: #020617;
   background-image:
-    linear-gradient(rgba(255,255,255,0.05) 1px, transparent 1px),
-    linear-gradient(to right, rgba(255,255,255,0.05) 1px, transparent 1px);
+    linear-gradient(rgba(255, 255, 255, 0.05) 1px, transparent 1px),
+    linear-gradient(to right, rgba(255, 255, 255, 0.05) 1px, transparent 1px);
   background-size: 40px 40px;
 }
 
+:root {
+  --scroll-track: #0f172a;
+  --scroll-thumb: #4f46e5;
+  --scroll-thumb-hover: #06b6d4;
+  --scroll-thumb-border: #0b1120;
+}
+
+* {
+  scrollbar-width: thin;
+  scrollbar-color: var(--scroll-thumb) var(--scroll-track);
+}
+
+*::-webkit-scrollbar {
+  width: 10px;
+  height: 10px;
+}
+
+*::-webkit-scrollbar-track {
+  background: linear-gradient(180deg, #0b1120, var(--scroll-track));
+  border-radius: 999px;
+}
+
+*::-webkit-scrollbar-thumb {
+  background: linear-gradient(
+    180deg,
+    var(--scroll-thumb),
+    var(--scroll-thumb-hover)
+  );
+  border: 2px solid var(--scroll-thumb-border);
+  border-radius: 999px;
+}
+
+*::-webkit-scrollbar-thumb:hover {
+  background: linear-gradient(180deg, #6366f1, #22d3ee);
+}
+
 @keyframes shine {
-  0% { transform: translateX(-100%); }
-  100% { transform: translateX(100%); }
+  0% {
+    transform: translateX(-100%);
+  }
+  100% {
+    transform: translateX(100%);
+  }
 }

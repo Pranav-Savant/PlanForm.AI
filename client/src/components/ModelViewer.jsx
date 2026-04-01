@@ -857,12 +857,6 @@ function ModelViewer({
           accent="#38bdf8"
           icon="🪟"
         />
-        <Stat
-          label="Rooms"
-          value={roomPolygons.length}
-          accent="#a78bfa"
-          icon="🏠"
-        />
       </div>
     </div>
   );

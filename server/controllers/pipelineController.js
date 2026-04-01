@@ -18,6 +18,59 @@ const MATERIALS_FILE_PATH = path.resolve(
 
 let cachedMaterialsCatalog = null;
 
+const buildRecommendationSummary = (recommendations = []) => {
+  if (!Array.isArray(recommendations)) return [];
+
+  return recommendations.map((entry) => ({
+    element: entry.element,
+    span: entry.span,
+    topChoice: entry.topChoice,
+    tradeoffInsight: entry.tradeoffInsight,
+    topOptions: (entry.rankedOptions || []).slice(0, 3).map((material) => ({
+      name: material.name,
+      score: material.score,
+      cost: material.costLabel || material.cost,
+      strength: material.strength,
+      durability: material.durability,
+      thermalEfficiency: material.thermalEfficiency,
+      rawMetrics: material.rawMetrics,
+    })),
+  }));
+};
+
+const extractRelevantMaterialsCatalog = (
+  materialsCatalog = [],
+  recommendationSummary = [],
+) => {
+  if (
+    !Array.isArray(materialsCatalog) ||
+    !Array.isArray(recommendationSummary)
+  ) {
+    return [];
+  }
+
+  const usedMaterialNames = new Set();
+
+  recommendationSummary.forEach((entry) => {
+    (entry.topOptions || []).forEach((material) => {
+      if (material?.name) {
+        usedMaterialNames.add(material.name);
+      }
+    });
+  });
+
+  return materialsCatalog
+    .filter((material) => usedMaterialNames.has(material.name))
+    .map((material) => ({
+      name: material.name,
+      costPerSqMInr: material.costPerSqMInr,
+      strengthMPa: material.strengthMPa,
+      serviceLifeYears: material.serviceLifeYears,
+      thermalConductivityWmK: material.thermalConductivityWmK,
+      bestUse: material.bestUse,
+    }));
+};
+
 const loadMaterialsCatalog = async () => {
   if (cachedMaterialsCatalog) return cachedMaterialsCatalog;
 
@@ -48,7 +101,6 @@ export const analyzeFloorPlan = async (req, res) => {
 
     const aiExplanation = await generateMaterialExplanation({
       buildingSummary: {
-        totalRooms: parsedLayout.rooms,
         totalWalls: parsedLayout.walls,
         floorHeight: "3m",
       },
@@ -71,12 +123,159 @@ export const analyzeFloorPlan = async (req, res) => {
   }
 };
 
+const PIPELINE_STEPS = [
+  { key: "preparing_image", label: "Preparing image" },
+  { key: "parsing_2d_layout", label: "Parsing 2D layout" },
+  {
+    key: "detecting_structural_geometry",
+    label: "Detecting structural geometry",
+  },
+  { key: "estimating_materials", label: "Estimating materials" },
+  { key: "evaluating_tradeoffs", label: "Evaluating trade-offs" },
+  { key: "generating_final_report", label: "Generating final report" },
+];
+
+const createProgressEmitter = (res) => {
+  const sendEvent = (payload) => {
+    res.write(`${JSON.stringify(payload)}\n`);
+  };
+
+  const findStep = (stepKey) =>
+    PIPELINE_STEPS.findIndex((step) => step.key === stepKey);
+
+  return {
+    start: (message = "Pipeline started") => {
+      sendEvent({
+        type: "pipeline_start",
+        message,
+        totalSteps: PIPELINE_STEPS.length,
+      });
+    },
+    stepStarted: (stepKey, message) => {
+      const stepIndex = findStep(stepKey);
+      sendEvent({
+        type: "step_started",
+        stepKey,
+        stepIndex,
+        totalSteps: PIPELINE_STEPS.length,
+        message,
+      });
+    },
+    stepCompleted: (stepKey, message) => {
+      const stepIndex = findStep(stepKey);
+      sendEvent({
+        type: "step_completed",
+        stepKey,
+        stepIndex,
+        totalSteps: PIPELINE_STEPS.length,
+        message,
+      });
+    },
+    done: (result) => {
+      sendEvent({
+        type: "completed",
+        totalSteps: PIPELINE_STEPS.length,
+        result,
+      });
+    },
+    fail: (message) => {
+      sendEvent({
+        type: "error",
+        message,
+      });
+    },
+  };
+};
+
+export const analyzeFloorPlanStream = async (req, res) => {
+  res.setHeader("Content-Type", "application/x-ndjson; charset=utf-8");
+  res.setHeader("Cache-Control", "no-cache, no-transform");
+  res.setHeader("Connection", "keep-alive");
+
+  const progress = createProgressEmitter(res);
+
+  try {
+    if (!req.file) {
+      progress.fail("No floor plan image uploaded");
+      res.end();
+      return;
+    }
+
+    progress.start("Upload received. Starting analysis...");
+
+    progress.stepStarted("preparing_image", "Validating uploaded image");
+    progress.stepCompleted("preparing_image", "Image ready for CV processing");
+
+    progress.stepStarted("parsing_2d_layout", "Parsing 2D layout geometry");
+    const parsedLayout = await parseFloorPlanWithCV(req.file.path);
+    progress.stepCompleted("parsing_2d_layout", "Layout parsing completed");
+
+    progress.stepStarted(
+      "detecting_structural_geometry",
+      "Detecting walls and structural geometry",
+    );
+    const structuralElements = classifyStructuralElements(parsedLayout);
+    progress.stepCompleted(
+      "detecting_structural_geometry",
+      "Structural element detection completed",
+    );
+
+    progress.stepStarted(
+      "estimating_materials",
+      "Estimating material recommendations",
+    );
+    const recommendations = getMaterialRecommendations(structuralElements);
+    progress.stepCompleted(
+      "estimating_materials",
+      "Material recommendation pass completed",
+    );
+
+    progress.stepStarted(
+      "evaluating_tradeoffs",
+      "Evaluating cost and durability trade-offs",
+    );
+    const aiExplanation = await generateMaterialExplanation({
+      buildingSummary: {
+        totalWalls: parsedLayout.walls,
+        floorHeight: "3m",
+      },
+      recommendations,
+    });
+    progress.stepCompleted(
+      "evaluating_tradeoffs",
+      "Trade-off analysis completed",
+    );
+
+    progress.stepStarted(
+      "generating_final_report",
+      "Compiling final analysis payload",
+    );
+
+    const result = {
+      success: true,
+      parsedLayout,
+      structuralElements,
+      recommendations,
+      aiExplanation,
+    };
+
+    progress.stepCompleted("generating_final_report", "Final report ready");
+    progress.done(result);
+    res.end();
+  } catch (error) {
+    console.error("Pipeline Stream Error:", error.message);
+    progress.fail("Error analyzing floor plan");
+    res.end();
+  }
+};
+
 export const chatWithAssistant = async (req, res) => {
   try {
     const {
       message,
       aiExplanation,
       recommendations,
+      recommendationSummary,
       parsedLayout,
       structuralElements,
       chatHistory,
@@ -98,9 +297,26 @@ export const chatWithAssistant = async (req, res) => {
 
     const materialsCatalog = await loadMaterialsCatalog();
 
+    const normalizedRecommendationSummary =
+      Array.isArray(recommendationSummary) && recommendationSummary.length
+        ? recommendationSummary
+        : buildRecommendationSummary(recommendations);
+
+    const normalizedStructuralElements =
+      Array.isArray(structuralElements) && structuralElements.length
+        ? structuralElements
+        : normalizedRecommendationSummary.map((entry) => ({
+            elementType: entry.element,
+            span: entry.span,
+          }));
+
+    const relevantMaterialsCatalog = extractRelevantMaterialsCatalog(
+      materialsCatalog,
+      normalizedRecommendationSummary,
+    );
+
     const projectData = {
       buildingSummary: {
-        totalRooms: parsedLayout?.rooms,
         totalWalls: parsedLayout?.walls,
         floorHeight: "3m",
         wallSegmentCount:
@@ -115,9 +331,9 @@ export const chatWithAssistant = async (req, res) => {
         totalArea: parsedLayout?.totalArea,
       },
       parsedLayout,
-      structuralElements,
-      recommendations,
-      materialsCatalog,
+      structuralElements: normalizedStructuralElements,
+      recommendationSummary: normalizedRecommendationSummary,
+      materialsCatalog: relevantMaterialsCatalog,
     };
 
     const reply = await generateChatResponse({
