@@ -10,13 +10,15 @@ const MODEL_FALLBACK_CHAIN = ["llama-3.3-70b-versatile", "llama3-8b-8192"];
 
 // Keep final prompt safely under the lowest model's TPM (~6000 tokens ≈ 24000 chars).
 // We target 3500 tokens of input to leave room for system text + output.
-const MAX_DATA_CHARS = 12000;
+const EXPLANATION_MAX_DATA_CHARS = 12000;
+const CHAT_MAX_DATA_CHARS = 22000;
 
 const MAX_RETRIES = 3;
 const BASE_RETRY_DELAY_MS = 5000;
 const EXPLANATION_MAX_TOKENS = 1024;
-const CHAT_MAX_TOKENS = 220;
+const CHAT_MAX_TOKENS = 700;
 const CHAT_MAX_WORDS = 110;
+const CHAT_FULL_DATA_MAX_WORDS = 700;
 
 const sleep = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
 
@@ -77,15 +79,18 @@ const deepTrim = (
  * Trims projectData to fit within MAX_DATA_CHARS.
  * Progressively tightens constraints until it fits.
  */
-const trimProjectData = (projectData) => {
+const trimProjectData = (
+  projectData,
+  maxDataChars = EXPLANATION_MAX_DATA_CHARS,
+) => {
   const raw = JSON.stringify(projectData);
-  if (raw.length <= MAX_DATA_CHARS) return projectData;
+  if (raw.length <= maxDataChars) return projectData;
 
   // Try progressively more aggressive trimming
   const configs = [
-    { maxItems: 3, maxStrLen: 120, maxDepth: 4 },
-    { maxItems: 2, maxStrLen: 80, maxDepth: 3 },
-    { maxItems: 1, maxStrLen: 60, maxDepth: 2 },
+    { maxItems: 60, maxStrLen: 180, maxDepth: 5 },
+    { maxItems: 30, maxStrLen: 140, maxDepth: 4 },
+    { maxItems: 15, maxStrLen: 100, maxDepth: 3 },
   ];
 
   for (const cfg of configs) {
@@ -100,16 +105,16 @@ const trimProjectData = (projectData) => {
       `[AI] Trim attempt (maxItems=${cfg.maxItems}, maxStrLen=${cfg.maxStrLen}): ` +
         `${raw.length} chars → ${result.length} chars`,
     );
-    if (result.length <= MAX_DATA_CHARS) return trimmed;
+    if (result.length <= maxDataChars) return trimmed;
   }
 
   // Last resort: stringify and hard-truncate with a note
   console.warn("[AI] Hard truncating projectData to fit token limit.");
-  const hardTrimmed = deepTrim(projectData, 1, 60, 2);
+  const hardTrimmed = deepTrim(projectData, 4, 80, 3);
   const str = JSON.stringify(hardTrimmed);
-  return str.length <= MAX_DATA_CHARS
+  return str.length <= maxDataChars
     ? hardTrimmed
-    : str.slice(0, MAX_DATA_CHARS) + '…"} (truncated)';
+    : str.slice(0, maxDataChars) + '…"} (truncated)';
 };
 
 const generateWithFallback = async (prompt, options = {}) => {
@@ -190,7 +195,7 @@ const generateWithFallback = async (prompt, options = {}) => {
 };
 
 export const generateMaterialExplanation = async (projectData) => {
-  const slim = trimProjectData(projectData);
+  const slim = trimProjectData(projectData, EXPLANATION_MAX_DATA_CHARS);
 
   const prompt = `
 You are an AI structural planning assistant.
@@ -257,8 +262,13 @@ export const generateChatResponse = async ({
     return "Please ask a question about your analyzed plan.";
   }
 
+  const wantsFullData =
+    /\b(all data|full data|complete data|raw data|everything|entire data)\b/i.test(
+      safeQuestion,
+    );
+
   const projectData = contextData ?? {};
-  const trimmedProjectData = trimProjectData(projectData);
+  const trimmedProjectData = trimProjectData(projectData, CHAT_MAX_DATA_CHARS);
   const slimHistory = Array.isArray(chatHistory)
     ? chatHistory.slice(-8).map((msg) => ({
         sender: msg?.sender === "user" ? "user" : "assistant",
@@ -276,8 +286,9 @@ Rules:
 - Focus on material choices, structural implications, cost-strength-durability tradeoffs.
 - You may perform simple calculations using provided material metrics (cost, strength, durability, thermalEfficiency).
 - When calculating, show short steps and assumptions.
-- Keep the response very short: maximum 4 lines and about 60-100 words.
-- Avoid long introductions and avoid repeating the full context.
+- If the user asks for full/all data, provide a structured Markdown response with all available element-wise material options and metrics (especially beam options).
+- If the user does not ask for full/all data, keep the response concise.
+- Avoid long introductions.
 
 Internal AI explanation context (do not expose unless user asks for explanation details):
 ${safeExplanation || "No explanation provided."}
@@ -299,7 +310,10 @@ Provide a direct and precise answer.
       maxTokens: CHAT_MAX_TOKENS,
     });
 
-    return truncateToWordLimit(rawReply, CHAT_MAX_WORDS);
+    return truncateToWordLimit(
+      rawReply,
+      wantsFullData ? CHAT_FULL_DATA_MAX_WORDS : CHAT_MAX_WORDS,
+    );
   } catch (error) {
     console.error("Groq Chat Error:", error.message);
     return "I could not generate a chat response right now. Please try again.";

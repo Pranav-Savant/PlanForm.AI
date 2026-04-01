@@ -26,10 +26,11 @@ const buildRecommendationSummary = (recommendations = []) => {
     span: entry.span,
     topChoice: entry.topChoice,
     tradeoffInsight: entry.tradeoffInsight,
-    topOptions: (entry.rankedOptions || []).slice(0, 3).map((material) => ({
+    topOptions: (entry.rankedOptions || []).map((material) => ({
       name: material.name,
       score: material.score,
       cost: material.costLabel || material.cost,
+      costPerSqMInr: material.cost,
       strength: material.strength,
       durability: material.durability,
       thermalEfficiency: material.thermalEfficiency,
@@ -38,37 +39,19 @@ const buildRecommendationSummary = (recommendations = []) => {
   }));
 };
 
-const extractRelevantMaterialsCatalog = (
-  materialsCatalog = [],
-  recommendationSummary = [],
-) => {
-  if (
-    !Array.isArray(materialsCatalog) ||
-    !Array.isArray(recommendationSummary)
-  ) {
+const extractRelevantMaterialsCatalog = (materialsCatalog = []) => {
+  if (!Array.isArray(materialsCatalog)) {
     return [];
   }
 
-  const usedMaterialNames = new Set();
-
-  recommendationSummary.forEach((entry) => {
-    (entry.topOptions || []).forEach((material) => {
-      if (material?.name) {
-        usedMaterialNames.add(material.name);
-      }
-    });
-  });
-
-  return materialsCatalog
-    .filter((material) => usedMaterialNames.has(material.name))
-    .map((material) => ({
-      name: material.name,
-      costPerSqMInr: material.costPerSqMInr,
-      strengthMPa: material.strengthMPa,
-      serviceLifeYears: material.serviceLifeYears,
-      thermalConductivityWmK: material.thermalConductivityWmK,
-      bestUse: material.bestUse,
-    }));
+  return materialsCatalog.map((material) => ({
+    name: material.name,
+    costPerSqMInr: material.costPerSqMInr,
+    strengthMPa: material.strengthMPa,
+    serviceLifeYears: material.serviceLifeYears,
+    thermalConductivityWmK: material.thermalConductivityWmK,
+    bestUse: material.bestUse,
+  }));
 };
 
 const loadMaterialsCatalog = async () => {
@@ -298,9 +281,11 @@ export const chatWithAssistant = async (req, res) => {
     const materialsCatalog = await loadMaterialsCatalog();
 
     const normalizedRecommendationSummary =
-      Array.isArray(recommendationSummary) && recommendationSummary.length
-        ? recommendationSummary
-        : buildRecommendationSummary(recommendations);
+      Array.isArray(recommendations) && recommendations.length
+        ? buildRecommendationSummary(recommendations)
+        : Array.isArray(recommendationSummary)
+          ? recommendationSummary
+          : [];
 
     const normalizedStructuralElements =
       Array.isArray(structuralElements) && structuralElements.length
@@ -310,10 +295,8 @@ export const chatWithAssistant = async (req, res) => {
             span: entry.span,
           }));
 
-    const relevantMaterialsCatalog = extractRelevantMaterialsCatalog(
-      materialsCatalog,
-      normalizedRecommendationSummary,
-    );
+    const relevantMaterialsCatalog =
+      extractRelevantMaterialsCatalog(materialsCatalog);
 
     const projectData = {
       buildingSummary: {
@@ -332,6 +315,7 @@ export const chatWithAssistant = async (req, res) => {
       },
       parsedLayout,
       structuralElements: normalizedStructuralElements,
+      recommendations,
       recommendationSummary: normalizedRecommendationSummary,
       materialsCatalog: relevantMaterialsCatalog,
     };
